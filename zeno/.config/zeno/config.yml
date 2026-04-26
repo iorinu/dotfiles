@@ -75,3 +75,7 @@ snippets:
   - name: enpit ssh connect
     keyword: sshe
     snippet: ssh -p 10022 enpit@localhost
+
+  - name: cd dotfiles
+    keyword: dot
+    snippet: cd ~/.dotfiles
