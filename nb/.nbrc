@@ -1,0 +1,17 @@
+
+
+export EDITOR="nvim" # Set by `nb` • Sun Apr 12 12:28:00 JST 2026
+
+export NB_DIR="${NB_DIR:-/Users/iori/src/github.com/iorinu/nb}" # Set by `nb` • Mon Apr 13 01:03:57 JST 2026
+
+export  NB_INDICATOR_AUDIO="🔉"
+export  NB_INDICATOR_BOOKMARK="🔖"
+export  NB_INDICATOR_DOCUMENT="📄"
+export  NB_INDICATOR_EBOOK="📖"
+export  NB_INDICATOR_ENCRYPTED="🔒"
+export  NB_INDICATOR_FOLDER="📂"
+export  NB_INDICATOR_IMAGE="🌄"
+export  NB_INDICATOR_PINNED="📌"
+export  NB_INDICATOR_TODO="✔️ "
+export  NB_INDICATOR_TODO_DONE="✅"
+export  NB_INDICATOR_VIDEO="📹"
