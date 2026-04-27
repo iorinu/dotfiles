@@ -80,6 +80,6 @@ snippets:
     keyword: dot
     snippet: cd ~/.dotfiles
 
-  - name: cd lecture
+  - name: cd lectures
     keyword: lec
-    snippet: cd ~/lecture
+    snippet: cd ~/lectures
