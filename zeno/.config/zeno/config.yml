@@ -79,3 +79,7 @@ snippets:
   - name: cd dotfiles
     keyword: dot
     snippet: cd ~/.dotfiles
+
+  - name: cd lecture
+    keyword: lec
+    snippet: cd ~/lecture
