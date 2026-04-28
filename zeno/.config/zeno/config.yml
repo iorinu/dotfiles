@@ -78,7 +78,7 @@ snippets:
 
   - name: cd dotfiles
     keyword: dot
-    snippet: cd ~/.dotfiles
+    snippet: cd ~/.dotfiles && ls -a
 
   - name: cd lectures
     keyword: lec
