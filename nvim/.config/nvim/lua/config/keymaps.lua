@@ -8,10 +8,10 @@ vim.keymap.set("i", "jk", "<Esc>")
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- ファイル保存 (スペース + w)
-vim.keymap.set("n", "<leader>w", ":w<CR>")
+vim.keymap.set("n", "<leader>w", ":w<CR>", { desc = "Save" })
 
 -- Neovim終了 (スペース + q)
-vim.keymap.set("n", "<leader>q", ":q<CR>")
+vim.keymap.set("n", "<leader>q", ":q<CR>", { desc = "Quit" })
 
 vim.keymap.set("n", "<leader>bg", function()
 	-- 現在のNormalハイライト（背景色）を取得
