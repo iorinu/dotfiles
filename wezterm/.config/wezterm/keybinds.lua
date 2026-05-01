@@ -157,6 +157,7 @@ return {
 		{ key = "w", mods = "SUPER", action = act.CloseCurrentTab({ confirm = true }) },
 		{ key = "x", mods = "SHIFT|CTRL", action = act.ActivateCopyMode },
 		{ key = "y", mods = "SHIFT|CTRL", action = act.ActivateCopyMode },
+		{ key = "y", mods = "SUPER", action = act.ActivateCopyMode },
 		{ key = "z", mods = "SHIFT|CTRL", action = act.TogglePaneZoomState },
 		{ key = "{", mods = "SUPER", action = act.ActivateTabRelative(-1) },
 		{ key = "{", mods = "SHIFT|SUPER", action = act.ActivateTabRelative(-1) },
