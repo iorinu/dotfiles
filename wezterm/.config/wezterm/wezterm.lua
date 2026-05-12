@@ -9,6 +9,7 @@ config.key_tables = require("keybinds").key_tables
 config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 2000 }
 --basicconfig
 config.automatically_reload_config = true
+config.font = wezterm.font("HackGen Console NF")
 config.font_size = 12.0
 config.use_ime = true
 
