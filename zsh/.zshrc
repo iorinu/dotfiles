@@ -4,6 +4,10 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # dotfiles
 alias dotfiles='git -C $HOME/.dotfiles'
 
+# XDG Base Directory
+# macOS の lazygit などは XDG_CONFIG_HOME を見ないとデフォルトの ~/Library/Application Support/ を参照するため明示
+export XDG_CONFIG_HOME="$HOME/.config"
+
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"

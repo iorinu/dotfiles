@@ -1,0 +1,12 @@
+# lazygit 設定ファイル
+# 公式リファレンス: https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
+
+gui:
+  # UI を日本語で表示
+  language: ja
+git:
+  pagers:
+    - # ANSI カラーを常に有効化（delta の色出力に必要）
+      colorArg: always
+      # delta を pager として使い、side-by-side で左右に並べて表示
+      pager: delta --dark --paging=never --side-by-side
