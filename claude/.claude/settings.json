@@ -13,10 +13,16 @@
     "vercel@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true
   },
+  "effortLevel": "medium",
   "permissions": {
     "allow": [
-      "Bash(ls *)",
-      "Bash(grep *)"
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(which:*)",
+      "Bash(cd:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(ps:*)"
     ]
   }
 }
