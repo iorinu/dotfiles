@@ -261,4 +261,7 @@ export NDK_HOME="$ANDROID_HOME/ndk/30.0.14904198"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 
 # zoxide (cd の賢い版: z プロジェクト名 で頻度・最近性で飛べる)
+# zi で fzf 起動時に右側にディレクトリ中身をプレビュー表示
+# {2..} は zoxide の出力 "スコア パス" のうちパス部分を渡している
+export _ZO_FZF_OPTS="--no-sort --keep-right --height=60% --info=inline --layout=reverse --exit-0 --select-1 --bind=ctrl-z:ignore,btab:up,tab:down --preview-window=right,50%,sharp --preview='CLICOLOR_FORCE=1 ls -lhAG {2..}'"
 eval "$(zoxide init zsh)"
