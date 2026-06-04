@@ -14,10 +14,15 @@
     "commit-commands@claude-plugins-official": true
   },
   "effortLevel": "medium",
+  "env": {
+    "USE_BUILTIN_RIPGREP": "0"
+  },
   "permissions": {
     "allow": [
       "Bash(ls:*)",
       "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(fd:*)",
       "Bash(which:*)",
       "Bash(cd:*)",
       "Bash(cat:*)",
