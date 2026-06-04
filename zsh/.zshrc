@@ -259,3 +259,6 @@ export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 export NDK_HOME="$ANDROID_HOME/ndk/30.0.14904198"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
+
+# zoxide (cd の賢い版: z プロジェクト名 で頻度・最近性で飛べる)
+eval "$(zoxide init zsh)"
