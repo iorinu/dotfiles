@@ -23,8 +23,8 @@ return {
     opts = {
       autoplay = true,
       duration_ms = 3000,
-      width = 80,
-      height = 24,
+      width = 120,
+      height = 34,
       gif_path = vim.fn.stdpath("config") .. "/amadeus.gif",
     },
   },
