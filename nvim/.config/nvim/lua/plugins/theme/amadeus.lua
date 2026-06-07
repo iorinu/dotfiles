@@ -1,11 +1,11 @@
--- nvim 起動時に Amadeus 起動シーケンス GIF を流すプラグイン
--- GIF 本体は著作権の都合で dotfiles リポジトリにも含めず、
--- stdpath("config")/amadeus.gif (= ~/.config/nvim/amadeus.gif) に各自で配置する。
+-- nvim 起動時に Amadeus 起動シーケンスを流すプラグイン。
+-- フレーム素材は著作権の都合で dotfiles リポジトリにも含めず、
+-- stdpath("config")/amadeus_frames/ (= ~/.config/nvim/amadeus_frames/) に各自で配置する。
 -- このパスは dotfiles 側の .gitignore で除外済み。
 -- プラグインクローン先 (~/.local/share/nvim/lazy/) に置くと再インストール時に消えるので避ける。
 --
 -- dashboard-nvim と同じ VimEnter で発火するが、Amadeus はフローティングウィンドウとして
--- dashboard の上に重なり、duration_ms 経過後に自動で閉じる。
+-- dashboard の上に重なり、全フレーム再生後に自動で閉じる。
 return {
   {
     -- 画像をターミナルに表示するための依存。wezterm は kitty backend で動作する。
@@ -22,10 +22,10 @@ return {
     event = "VimEnter",
     opts = {
       autoplay = true,
-      duration_ms = 3000,
+      fps = 15,
       width = 120,
       height = 34,
-      gif_path = vim.fn.stdpath("config") .. "/amadeus.gif",
+      frames_dir = vim.fn.stdpath("config") .. "/amadeus_frames",
     },
   },
 }
