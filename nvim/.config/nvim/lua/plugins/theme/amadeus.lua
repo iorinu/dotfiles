@@ -4,8 +4,9 @@
 -- このパスは dotfiles 側の .gitignore で除外済み。
 -- プラグインクローン先 (~/.local/share/nvim/lazy/) に置くと再インストール時に消えるので避ける。
 --
--- dashboard-nvim と同じ VimEnter で発火するが、Amadeus はフローティングウィンドウとして
--- dashboard の上に重なり、全フレーム再生後に自動で閉じる。
+-- 起動時の自動再生は現状安定しないので autoplay は false にして手動 (`:Amadeus`) 運用にしている。
+-- 安定化したら autoplay = true に戻す予定。
+-- 追跡: https://github.com/iorinu/nvim-Amadeus/issues/1
 return {
   {
     -- 画像をターミナルに表示するための依存。wezterm は kitty backend で動作する。
@@ -19,9 +20,10 @@ return {
   {
     "iorinu/nvim-Amadeus",
     dependencies = { "3rd/image.nvim" },
-    event = "VimEnter",
+    -- autoplay を切ったので VimEnter で先読みする必要はない。`:Amadeus` 実行時にロードする。
+    cmd = { "Amadeus", "AmadeusStop" },
     opts = {
-      autoplay = true,
+      autoplay = false,
       fps = 15,
       width = 120,
       height = 34,
