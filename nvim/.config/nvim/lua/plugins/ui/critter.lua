@@ -3,6 +3,8 @@
 -- 対応ターミナル: kitty, Ghostty, WezTerm (WezTerm はゴーストが残りやすいので注意)
 return {
 	"iorinu/critter.nvim",
+	-- バグがありそうなので一旦無効化
+	enabled = false,
 	-- VimEnter で自動 show するので遅延ロードしない方が確実
 	lazy = false,
 	dependencies = {
