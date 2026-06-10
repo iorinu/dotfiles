@@ -1,0 +1,21 @@
+# termrain 設定ファイル
+# 参考: https://github.com/iorinu/termrain
+
+[location]
+# 表示する地点（大阪府箕面市）
+name = "Minoh"
+latitude = 34.8266
+longitude = 135.4717
+country = "JP"
+
+[ui]
+# 単位系: metric=摂氏/メートル法、imperial=華氏/ヤード・ポンド法
+unit = "metric"
+# 自動更新間隔（秒）
+refresh_interval = 600
+
+[radar]
+# 雨雲レーダーのズームレベル（数値が大きいほど詳細）
+zoom = 11
+# 地図スタイル
+map_style = "carto_voyager"
