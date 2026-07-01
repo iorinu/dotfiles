@@ -8,6 +8,36 @@ return {
 			"hrsh7th/cmp-nvim-lsp",
 		},
 		config = function()
+			-- LSPがバッファにアタッチされた時だけ有効なキーマップを登録する
+			-- - LspAttach イベント: LSPサーバが現在のバッファに繋がった瞬間に発火
+			-- - buffer = args.buf を渡すことで「このバッファ限定」のキーマップになる
+			--   → MarkdownなどLSP無しのファイルでは組み込み `gd` がそのまま使える
+			-- - augroup + clear=true: init.lua を再読込しても二重登録されない
+			vim.api.nvim_create_autocmd("LspAttach", {
+				group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
+				callback = function(args)
+					local opts = { buffer = args.buf, silent = true }
+					-- 定義へジャンプ（rust-analyzer等のLSPに問い合わせる）
+					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+					-- 宣言へ（Rustだと挙動はほぼ definition と同じ）
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+					-- 型定義へジャンプ
+					vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, opts)
+					-- 実装へジャンプ（trait → impl 等）
+					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+					-- 参照一覧（telescopeが入っていればそちらが横取りする可能性あり）
+					vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+					-- ホバー: 型情報・docを浮かべる（もう一度Kで中に入れる）
+					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+					-- rename: プロジェクト全体で安全にリネーム
+					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+					-- code action: import追加・自動修正など
+					vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+					-- 関数引数のシグネチャを表示（挿入モード時に便利）
+					vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts)
+				end,
+			})
+
 			-- 1. Mason（インストーラー）を先にセットアップ
 			require("mason").setup()
 
