@@ -15,6 +15,7 @@
       "Bash(ps:*)"
     ]
   },
+  "model": "claude-opus-4-7",
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
@@ -28,5 +29,6 @@
     "vercel@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true
   },
-  "effortLevel": "medium"
+  "effortLevel": "medium",
+  "tui": "fullscreen"
 }
