@@ -20,6 +20,9 @@ export NVM_DIR="$HOME/.nvm"
 
 export PATH="/Library/TeX/texbin:$PATH"
 
+# カスタム補完ディレクトリ (oh-my-zsh の compinit より前に設定する)
+fpath=(~/.zfunc $fpath)
+
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
