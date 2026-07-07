@@ -164,6 +164,9 @@ return {
 		{ key = "}", mods = "SUPER", action = act.ActivateTabRelative(1) },
 		{ key = "}", mods = "SHIFT|SUPER", action = act.ActivateTabRelative(1) },
 		{ key = "phys:Space", mods = "SHIFT|CTRL", action = act.QuickSelect },
+		-- 1行単位のスクロールバック移動（Shift+PageUp/Down の1ページ版と対になる）
+		{ key = "UpArrow", mods = "SHIFT", action = act.ScrollByLine(-1) },
+		{ key = "DownArrow", mods = "SHIFT", action = act.ScrollByLine(1) },
 		{ key = "PageUp", mods = "SHIFT", action = act.ScrollByPage(-1) },
 		{ key = "PageUp", mods = "CTRL", action = act.ActivateTabRelative(-1) },
 		{ key = "PageUp", mods = "SHIFT|CTRL", action = act.MoveTabRelative(-1) },
