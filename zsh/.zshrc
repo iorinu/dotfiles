@@ -20,6 +20,9 @@ export NVM_DIR="$HOME/.nvm"
 
 export PATH="/Library/TeX/texbin:$PATH"
 
+# Go: `go install` で ~/go/bin に置かれるツール（goimports など）を使うためPATHに追加
+export PATH="$HOME/go/bin:$PATH"
+
 # カスタム補完ディレクトリ (oh-my-zsh の compinit より前に設定する)
 fpath=(~/.zfunc $fpath)
 
