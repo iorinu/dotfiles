@@ -10,6 +10,10 @@ return {
         css = { "prettier" },
         html = { "prettier" },
         astro = { "prettier" },
+        -- python: import 順の整理 → コード整形 の順に走らせる
+        python = { "ruff_organize_imports", "ruff_format" },
+        -- go: goimports が gofmt を包含 + 未使用/不足importの自動調整までやる
+        go = { "goimports" },
       },
       format_on_save = {
         timeout_ms = 500,

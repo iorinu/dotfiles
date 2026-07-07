@@ -31,6 +31,9 @@ return {
 					"markdown",
 					"markdown_inline",
 					"mdx",
+					"go",
+					"gomod",
+					"gosum",
 				},
 
 				-- 同期インストール（false推奨）

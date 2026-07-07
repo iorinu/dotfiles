@@ -57,6 +57,7 @@ return {
 				"jsonls",
 				"mdx_analyzer",
 				"marksman",
+				"gopls",
 			}
 
 			-- 共通の capabilities
@@ -125,6 +126,24 @@ return {
 					["rust_analyzer"] = function() end,
 					["mdx_analyzer"] = function() end,
 					["marksman"] = function() end,
+
+					-- gopls: 未使用パラメータ検出やshadow検査など、gopls推奨のanalyzerを有効化
+					-- staticcheck: go vetより厳しい静的解析（gopls公式が推奨）
+					["gopls"] = function()
+						require("lspconfig").gopls.setup({
+							capabilities = capabilities,
+							settings = {
+								gopls = {
+									analyses = {
+										unusedparams = true, -- 使われていない関数引数を検出
+										shadow = true, -- 変数シャドウイングを検出
+									},
+									staticcheck = true,
+									gofumpt = false, -- 整形はconform側のgoimportsに任せる
+								},
+							},
+						})
+					end,
 
 					-- (B) TexLab (LaTeX) 専用の設定
 					["texlab"] = function()
