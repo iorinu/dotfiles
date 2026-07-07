@@ -28,6 +28,9 @@ vim.opt.mouse = "a"
 -- 色の設定（フルカラー対応）
 vim.opt.termguicolors = true
 
+-- (以前は tmux 環境で vim.opt.t_ut = "" にしていたが、
+--  Neovim では t_XX は基本的に無効なので削除)
+
 --縦横ラインの表示
 vim.opt.cursorline = true
 vim.opt.cursorcolumn = true

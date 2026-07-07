@@ -65,6 +65,9 @@ return {
 			-- 出力の表示・非表示
 			map("n", "<leader>mo", ":noautocmd MoltenEnterOutput<CR>", { silent = true, desc = "Molten: 出力ウィンドウへ" })
 			map("n", "<leader>mh", ":MoltenHideOutput<CR>", { silent = true, desc = "Molten: 出力を隠す" })
+
+			-- 実行結果を .ipynb に書き戻す（jupytext 経由だと出力が保存されないため必要）
+			map("n", "<leader>mx", ":MoltenExportOutput<CR>", { silent = true, desc = "Molten: 出力を .ipynb に書き出し" })
 		end,
 	},
 	{
@@ -93,8 +96,10 @@ return {
 					vim.cmd("write")
 				end
 				local out = src:gsub("%.py$", ".ipynb")
+				-- --set-kernel python3: 生成 .ipynb に kernelspec を埋め込む
+				--   これが無いと jupytext.nvim 側の read_from_ipynb が kernelspec 不在で落ちる
 				vim.system(
-					{ "jupytext", "--to", "notebook", "-o", out, src },
+					{ "jupytext", "--to", "notebook", "--set-kernel", "python3", "-o", out, src },
 					{ text = true },
 					vim.schedule_wrap(function(res)
 						if res.code ~= 0 then
