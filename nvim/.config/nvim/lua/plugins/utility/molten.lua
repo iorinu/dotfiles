@@ -76,11 +76,11 @@ return {
 		config = function()
 			require("jupytext").setup({
 				-- .ipynb を開いたときのデフォルト形式
-				-- "markdown" にすると Markdown 混在ノート向け、
-				-- Python 中心なら "py:percent"（# %% で区切る形式）が扱いやすい
-				style = "markdown",
-				output_extension = "md",
-				force_ft = "markdown",
+				-- "py:percent" は # %% でセルを区切る Python 形式。
+				-- Markdown 中間ファイル (.md) が生成されず、Python のまま編集できる
+				style = "py:percent",
+				output_extension = "py",
+				force_ft = "python",
 			})
 
 			-- <leader>j : 現在の .py を .ipynb に変換して開く
