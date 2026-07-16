@@ -5,6 +5,15 @@ vim.filetype.add({
 	},
 })
 
+-- 使っていない言語プロバイダを無効化
+-- （:checkhealth の WARNING を消し、起動時の探索も省略される）
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+
+-- LSPログの肥大化防止（過去に 350MB 超まで膨れて起動が遅くなったため）
+vim.lsp.log.set_level(vim.log.levels.WARN)
+
 -- 行番号を表示
 vim.opt.number = true
 vim.opt.relativenumber = true -- 相対行番号（ジャンプしやすくなる）
