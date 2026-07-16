@@ -30,5 +30,9 @@
     "commit-commands@claude-plugins-official": true
   },
   "effortLevel": "medium",
-  "tui": "fullscreen"
+  "tui": "fullscreen",
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/iori/.claude/runcat-statusline.py"
+  }
 }
