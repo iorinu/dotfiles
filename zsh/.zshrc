@@ -271,3 +271,6 @@ export PATH="$ANDROID_HOME/platform-tools:$PATH"
 # {2..} は zoxide の出力 "スコア パス" のうちパス部分を渡している
 export _ZO_FZF_OPTS="--no-sort --keep-right --height=60% --info=inline --layout=reverse --exit-0 --select-1 --bind=ctrl-z:ignore,btab:up,tab:down --preview-window=right,50%,sharp --preview='CLICOLOR_FORCE=1 ls -lhAG {2..}'"
 eval "$(zoxide init zsh)"
+
+# simrem (自作リマインダー CLI)
+export PATH="$HOME/src/github.com/iorinu/simple-reminder:$PATH"

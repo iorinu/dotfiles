@@ -16,6 +16,10 @@
     ]
   },
   "model": "claude-opus-4-7",
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/iori/.claude/runcat-statusline.py"
+  },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
@@ -30,9 +34,5 @@
     "commit-commands@claude-plugins-official": true
   },
   "effortLevel": "medium",
-  "tui": "fullscreen",
-  "statusLine": {
-    "type": "command",
-    "command": "/Users/iori/.claude/runcat-statusline.py"
-  }
+  "tui": "fullscreen"
 }

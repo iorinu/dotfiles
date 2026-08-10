@@ -1,0 +1,12 @@
+{
+  "/Users/iori/.dotfiles": [
+    {
+      "headRefName": "update-claude-config-env-and-commit-commands",
+      "number": 1,
+      "title": "update claude config add .env access rule and enable commit-commands plugin",
+      "state": "MERGED",
+      "url": "https://github.com/iorinu/dotfiles/pull/1",
+      "headRepositoryOwner": "iorinu"
+    }
+  ]
+}
