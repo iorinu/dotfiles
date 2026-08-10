@@ -1,0 +1,4 @@
+model = "gpt-5.6-terra"
+model_reasoning_effort = "high"
+[projects."/Users/iori/lectures/pbl/dlppbl"]
+trust_level = "trusted"

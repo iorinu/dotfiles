@@ -82,6 +82,7 @@ uv "jupyterlab"
 uv "jupytext", with: ["jupyter-client"]
 uv "plamo-translate", with: ["torch"]
 uv "ruff"
+npm "@openai/codex"
 npm "corepack"
 npm "track-cli"
 npm "tree-sitter-cli"
