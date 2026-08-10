@@ -39,14 +39,19 @@ def find_codex() -> str:
 
 def rpc_request() -> Dict[str, Any]:
     """app-server の JSONL プロトコルから現在の使用量を一度だけ取得する。"""
+    codex_bin = find_codex()
+    environment = os.environ.copy()
+    # nvm 版の codex は shebang から node を探すため、同じ bin を PATH の先頭に置く。
+    environment["PATH"] = f"{Path(codex_bin).parent}:{environment.get('PATH', '')}"
     process = subprocess.Popen(
-        [find_codex(), "app-server", "--stdio"],
+        [codex_bin, "app-server", "--stdio"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
         text=True,
         encoding="utf-8",
         bufsize=1,
+        env=environment,
     )
     stdin = process.stdin
     stdout = process.stdout
