@@ -14,6 +14,9 @@ trust_level = "trusted"
 [projects."/Users/iori/Documents"]
 trust_level = "trusted"
 
+[projects."/Users/iori/src/github.com/iorinu/termrain"]
+trust_level = "trusted"
+
 [tui.model_availability_nux]
 "gpt-5.6-sol" = 1
 
@@ -23,7 +26,8 @@ source_type = "local"
 source = "/Users/iori/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.claude-plugins-official]
-last_updated = "2026-08-10T15:38:50Z"
+last_updated = "2026-08-11T02:21:09Z"
+last_revision = "920824c3e9509890fbec03ba6097014222393022"
 source_type = "git"
 source = "https://github.com/anthropics/claude-plugins-official.git"
 
@@ -136,3 +140,18 @@ USE_BUILTIN_RIPGREP = "0"
 [desktop]
 external-agent-import-sync-enabled = true
 conversationDetailMode = "STEPS_COMMANDS"
+realtimeVoiceScreenContextEnabled = true
+
+[hooks.state]
+
+[hooks.state."vercel@claude-plugins-official:hooks/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:3854f8501763b92012b4def8de676279493adfbaec8cc1d00ce72b8e80341b1c"
+
+[hooks.state."vercel@claude-plugins-official:hooks/hooks.json:session_start:0:1"]
+trusted_hash = "sha256:34d8e6e4abd36e2448fe0032fd7a20e075b3c985eea7290379689add51264a03"
+
+[hooks.state."vercel@claude-plugins-official:hooks/hooks.json:session_start:0:2"]
+trusted_hash = "sha256:2ebad29288ff7fb558b111a94eea88404fdd80f7739be1bea8098ddea09b31d0"
+
+[hooks.state."vercel@claude-plugins-official:hooks/hooks.json:session_end:0:0"]
+trusted_hash = "sha256:5612c7e3703ff80a8463df9f42b5c4c21a21578c072ea585f90ebcfca2547929"

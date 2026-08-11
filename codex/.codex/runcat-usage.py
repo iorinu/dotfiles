@@ -137,7 +137,7 @@ def snapshot(rate_limits: Dict[str, Any]) -> Dict[str, Any]:
     ]
     result = {
         "title": "Codex",
-        "symbol": "chevron.left.forwardslash.chevron.right",
+        "symbol": "terminal",
         "metrics": [item for item in metrics if item is not None],
         "lastUpdatedDate": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
