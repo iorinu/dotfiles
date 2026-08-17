@@ -15,7 +15,7 @@
       "Bash(ps:*)"
     ]
   },
-  "model": "claude-opus-4-7",
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "/Users/iori/.claude/runcat-statusline.py"

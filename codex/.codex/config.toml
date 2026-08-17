@@ -21,18 +21,18 @@ trust_level = "trusted"
 "gpt-5.6-sol" = 1
 
 [marketplaces.openai-bundled]
-last_updated = "2026-08-10T15:37:59Z"
+last_updated = "2026-08-14T09:42:41Z"
 source_type = "local"
 source = "/Users/iori/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.claude-plugins-official]
-last_updated = "2026-08-11T02:21:09Z"
-last_revision = "920824c3e9509890fbec03ba6097014222393022"
+last_updated = "2026-08-17T05:45:59Z"
+last_revision = "8864c9d619547417e9bd9305df0b4fc078f89b08"
 source_type = "git"
 source = "https://github.com/anthropics/claude-plugins-official.git"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-08-13T07:59:36Z"
+last_updated = "2026-08-14T09:42:03Z"
 source_type = "local"
 source = "/Users/iori/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
@@ -99,6 +99,9 @@ enabled = true
 [plugins."template-creator@openai-primary-runtime"]
 enabled = true
 
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
 [features]
 js_repl = false
 
@@ -113,13 +116,13 @@ NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_n
 NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
 NODE_REPL_TRUSTED_CODE_PATHS = "/Users/iori/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
 CODEX_HOME = "/Users/iori/.codex"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "323bc3e687e17d7e377238d9f4c69111c4d0e6219103b6316d8c52082489533b"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "7fe0e1c59da4bc68f9d6ab81ae8d349b53fee44b074f49be0effbc1105a5f1d3"
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.803.41515"
+BROWSER_USE_CODEX_APP_VERSION = "26.810.41047"
 CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
 [mcp_servers.computer-use]
@@ -133,7 +136,7 @@ inherit = "core"
 
 [shell_environment_policy.set]
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "323bc3e687e17d7e377238d9f4c69111c4d0e6219103b6316d8c52082489533b"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "7fe0e1c59da4bc68f9d6ab81ae8d349b53fee44b074f49be0effbc1105a5f1d3"
 NODE_REPL_TRUSTED_CODE_PATHS = "/Users/iori/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
 USE_BUILTIN_RIPGREP = "0"
 
@@ -141,6 +144,8 @@ USE_BUILTIN_RIPGREP = "0"
 external-agent-import-sync-enabled = true
 conversationDetailMode = "STEPS_COMMANDS"
 realtimeVoiceScreenContextEnabled = true
+followUpQueueMode = "queue"
+selected-avatar-id = "null-signal"
 
 [hooks.state]
 
