@@ -32,6 +32,9 @@ return {
 	keys = {
 		{ key = "Tab", mods = "CTRL", action = act.ActivateTabRelative(1) },
 		{ key = "Tab", mods = "SHIFT|CTRL", action = act.ActivateTabRelative(-1) },
+		-- Leaderの後にh/lを押して、数字レイヤーを使わずタブを移動する
+		{ key = "h", mods = "LEADER", action = act.ActivateTabRelative(-1) },
+		{ key = "l", mods = "LEADER", action = act.ActivateTabRelative(1) },
 		{ key = "Enter", mods = "ALT", action = act.ToggleFullScreen },
 		{ key = "!", mods = "CTRL", action = act.ActivateTab(0) },
 		{ key = "!", mods = "SHIFT|CTRL", action = act.ActivateTab(0) },
