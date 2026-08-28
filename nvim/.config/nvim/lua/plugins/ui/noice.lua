@@ -3,7 +3,10 @@ return{
   "folke/noice.nvim",
   event = "VeryLazy",
   opts = {
-    -- add any options here
+    cmdline = {
+      -- コマンドラインを中央のポップアップではなく、下端に表示する
+      view = "cmdline",
+    },
   },
   dependencies = {
     -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
