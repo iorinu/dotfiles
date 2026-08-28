@@ -13,16 +13,17 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- ここが一番重要！
--- 「lua/plugins フォルダの中身を全部読み込め」という指示です
+-- 「lua/plugins 以下の各カテゴリを読み込め」という指示です
 require("lazy").setup({
 	spec = {
-		{ import = "plugins.git" },
-		{ import = "plugins.scope" },
-		{ import = "plugins.ui" },
-		{ import = "plugins.utility" },
-		{ import = "plugins.terminal" },
-		{ import = "plugins.theme" },
-		{ import = "plugins.lsp" },
 		{ import = "plugins.ai" },
+		{ import = "plugins.appearance" },
+		{ import = "plugins.completion" },
+		{ import = "plugins.editor" },
+		{ import = "plugins.git" },
+		{ import = "plugins.language" },
+		{ import = "plugins.lsp" },
+		{ import = "plugins.navigation" },
+		{ import = "plugins.terminal" },
 	},
 })

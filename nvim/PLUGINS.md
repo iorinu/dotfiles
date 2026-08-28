@@ -14,6 +14,25 @@
 
 現在 `lazy-lock.json` に記録されているプラグインは50個です。依存プラグインも含まれます。
 
+## フォルダ構成
+
+`lua/plugins/` は、プラグインの見た目ではなく主な役割で分類しています。
+
+| フォルダ | 主な内容 |
+|---|---|
+| `ai/` | Copilot と Copilot Chat |
+| `appearance/` | テーマ、ステータスライン、通知、視覚効果、起動画面 |
+| `completion/` | nvim-cmp、LuaSnip、補完ソース |
+| `editor/` | 自動括弧、入力方式、句読点変換 |
+| `git/` | Git の変更表示、差分、履歴 |
+| `language/` | Tree-sitter、フォーマッター、Markdown、Jupyter、LaTeX |
+| `lsp/` | LSP、Mason、診断一覧 |
+| `navigation/` | Telescope、NvimTree、Bufferline |
+| `terminal/` | Neovim 内蔵ターミナル |
+| `legacy/` | 現在読み込まない旧設定の退避先 |
+
+1つの設定ファイルに複数の関連プラグインをまとめる場合があります。例えば `ai/copilot.lua` は Copilot 本体と Copilot Chat、`language/molten.lua` は Molten と Jupytext を定義しています。
+
 ## プラグイン管理
 
 | プラグイン | 役割 | 現在の設定 |
@@ -139,6 +158,6 @@ Jupytext の変換には `jupytext` CLI も必要です。
 
 ## 補足
 
-- `nvim/.config/nvim/lua/plugins/git/gitgragh` は、`gitgraph.lua` と同じ GitGraph 定義を持つ重複ファイルです。この一覧では `isakbm/gitgraph.nvim` を1回だけ記載しています。
+- `nvim/.config/nvim/legacy/gitgragh` は、`gitgraph.lua` と同じ GitGraph 定義を持つ旧ファイルです。プラグイン読み込み対象の `lua/plugins/` 外へ移してあり、この一覧では `isakbm/gitgraph.nvim` を1回だけ記載しています。
 - `lazy-lock.json` のエントリは、プラグイン本体だけでなく依存プラグインも含みます。
 - プラグインのロード条件やキー設定を変更した場合は、このファイルの該当箇所も更新します。
