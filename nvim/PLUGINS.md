@@ -12,7 +12,7 @@
 | 条件付き | ファイルタイプ、コマンド、イベントなどをきっかけに読み込まれるプラグイン |
 | 無効 | 設定ファイルには残っているが、現在は使用しないプラグイン |
 
-現在 `lazy-lock.json` に記録されているプラグインは50個です。依存プラグインも含まれます。
+現在 `lazy-lock.json` に記録されているプラグインは51個です。依存プラグインも含まれます。
 
 ## フォルダ構成
 
@@ -127,6 +127,12 @@
 | [benlubas/molten-nvim](https://github.com/benlubas/molten-nvim) | Neovim から Jupyter カーネルを起動し、コードセルを実行する | Python と Markdown で読み込み。`<Space>m` 配下にカーネル初期化、セル実行、出力表示などを設定 |
 | [GCBallesteros/jupytext.nvim](https://github.com/GCBallesteros/jupytext.nvim) | `.ipynb` とテキスト形式を相互変換する | `.ipynb` を Python の `py:percent` 形式で編集。`<Space>j` で現在の `.py` を `.ipynb` に変換して開く |
 | [lervag/vimtex](https://github.com/lervag/vimtex) | LaTeX の編集、コンパイル、PDF プレビューを支援する | `latexmk` と `lualatex` でビルド。macOS の PDF ビューアーは Skim |
+
+## OpenAPI・Swagger
+
+| プラグイン | 役割 | 現在の設定 |
+|---|---|---|
+| [vinnymeller/swagger-preview.nvim](https://github.com/vinnymeller/swagger-preview.nvim) | OpenAPI・Swagger ファイルを Swagger UI でブラウザにライブプレビューする | `:SwaggerPreview` で起動、`:SwaggerPreviewStop` で停止。保存時にプレビューを更新。`swagger-ui-watcher` が必要 |
 
 ### Molten の外部依存
 
