@@ -18,4 +18,6 @@ refresh_interval = 600
 # 雨雲レーダーのズームレベル（数値が大きいほど詳細）
 zoom = 11
 # 地図スタイル
-map_style = "carto_voyager"
+map_style = "open_free_map"
+# OpenFreeMap Liberty の道路幅倍率（小さいほど細い）
+open_free_map_road_scale = 0.5
