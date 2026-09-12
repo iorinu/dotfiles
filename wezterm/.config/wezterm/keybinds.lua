@@ -145,6 +145,7 @@ return {
 		{ key = "n", mods = "SHIFT|CTRL", action = spawn_window_with_cwd },
 		{ key = "n", mods = "SUPER", action = spawn_window_with_cwd },
 		{ key = "p", mods = "SHIFT|CTRL", action = act.ActivateCommandPalette },
+		{ key = "p", mods = "SHIFT|SUPER", action = act.ActivateCommandPalette },
 		{ key = "r", mods = "SHIFT|CTRL", action = act.ReloadConfiguration },
 		{ key = "r", mods = "SUPER", action = act.ReloadConfiguration },
 		{ key = "t", mods = "SHIFT|CTRL", action = spawn_tab_with_cwd },
