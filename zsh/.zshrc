@@ -274,3 +274,4 @@ eval "$(zoxide init zsh)"
 
 # simrem (自作リマインダー CLI)
 export PATH="$HOME/src/github.com/iorinu/simple-reminder:$PATH"
+export PATH="$HOME/.gem/ruby/2.6.0/bin:$PATH"

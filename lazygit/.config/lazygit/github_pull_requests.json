@@ -8,5 +8,37 @@
       "url": "https://github.com/iorinu/dotfiles/pull/1",
       "headRepositoryOwner": "iorinu"
     }
-  ]
+  ],
+  "/Users/iori/src/github.com/iorinu/Slidev": null,
+  "/Users/iori/src/github.com/iorinu/ioridram": null,
+  "/Users/iori/src/github.com/iorinu/iorinu": null,
+  "/Users/iori/src/github.com/iorinu/termrain": [
+    {
+      "headRefName": "refactor/split-app-module",
+      "number": 6,
+      "title": "refactor(app): split app.rs into focused submodules",
+      "state": "MERGED",
+      "url": "https://github.com/iorinu/termrain/pull/6",
+      "headRepositoryOwner": "iorinu"
+    },
+    {
+      "headRefName": "chore/clean-up-clippy-warnings",
+      "number": 8,
+      "title": "chore: clean up clippy warnings",
+      "state": "MERGED",
+      "checksState": "SUCCESS",
+      "url": "https://github.com/iorinu/termrain/pull/8",
+      "headRepositoryOwner": "iorinu"
+    },
+    {
+      "headRefName": "fix/radar-state-and-fallback-map",
+      "number": 7,
+      "title": "fix: prevent stale radar results",
+      "state": "MERGED",
+      "checksState": "SUCCESS",
+      "url": "https://github.com/iorinu/termrain/pull/7",
+      "headRepositoryOwner": "iorinu"
+    }
+  ],
+  "/Users/iori/src/github.com/myj-lab-unofficial/slack-rules": null
 }
