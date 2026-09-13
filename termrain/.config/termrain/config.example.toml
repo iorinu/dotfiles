@@ -1,5 +1,6 @@
 # termrain 設定ファイル
 # 参考: https://github.com/iorinu/termrain
+# このファイルを config.toml にコピーして、必要に応じて値を変更してください。
 
 [location]
 # 表示する地点（大阪府箕面市）
@@ -18,6 +19,8 @@ refresh_interval = 600
 # 雨雲レーダーのズームレベル（数値が大きいほど詳細）
 zoom = 11
 # 地図スタイル
-map_style = "open_free_map"
+map_style = "carto_voyager"
+# 必要な場合だけAPIキーを設定してください。値はGitに登録しないでください。
+carto_api_key = ""
 # OpenFreeMap Liberty の道路幅倍率（小さいほど細い）
 open_free_map_road_scale = 0.5
