@@ -151,7 +151,7 @@ USE_BUILTIN_RIPGREP = "0"
 
 [desktop]
 external-agent-import-sync-enabled = true
-conversationDetailMode = "STEPS_PROSE"
+conversationDetailMode = "STEPS_COMMANDS"
 realtimeVoiceScreenContextEnabled = true
 followUpQueueMode = "queue"
 selected-avatar-id = "null-signal"
