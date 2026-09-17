@@ -12,7 +12,7 @@
 | 条件付き | ファイルタイプ、コマンド、イベントなどをきっかけに読み込まれるプラグイン |
 | 無効 | 設定ファイルには残っているが、現在は使用しないプラグイン |
 
-現在 `lazy-lock.json` に記録されているプラグインは51個です。依存プラグインも含まれます。
+現在 `lazy-lock.json` に記録されているプラグインは53個です。依存プラグインも含みます。
 
 ## フォルダ構成
 
@@ -27,7 +27,7 @@
 | `git/` | Git の変更表示、差分、履歴 |
 | `language/` | Tree-sitter、フォーマッター、Markdown、Jupyter、LaTeX |
 | `lsp/` | LSP、Mason、診断一覧 |
-| `navigation/` | Telescope、NvimTree、Bufferline |
+| `navigation/` | Telescope、NvimTree、Bufferline、ファジー移動 |
 | `terminal/` | Neovim 内蔵ターミナル |
 | `legacy/` | 現在読み込まない旧設定の退避先 |
 
@@ -60,7 +60,9 @@
 | プラグイン | 役割 | 現在の設定 |
 |---|---|---|
 | [nvim-telescope/telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) | ファイル、文字列、バッファ、ヘルプなどを検索する | `<Space>ff` ファイル検索、`<Space>fg` 文字列検索、`<Space>fb` バッファ検索、`<Space>fh` ヘルプ検索。バージョンは `0.1.8` に固定 |
+| [yuki-yano/fuzzy-motion.vim](https://github.com/yuki-yano/fuzzy-motion.vim) | 画面内の単語をインクリメンタルなファジー検索で選び、カーソルを移動する | Normal modeで`Enter`を押すと起動。小文字で検索文字列を入力し、大文字のラベルまたは`Enter`で移動 |
 | [nvim-lua/plenary.nvim](https://github.com/nvim-lua/plenary.nvim) | Neovim プラグイン向けの共通ユーティリティライブラリ | Telescope、LazyGit、CopilotChat などの依存プラグイン |
+| [vim-denops/denops.vim](https://github.com/vim-denops/denops.vim) | Vim/Neovim上でDeno製プラグインを動かすための基盤 | fuzzy-motion.vimの依存プラグイン |
 
 ## LSP・コード補完
 
