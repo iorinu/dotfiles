@@ -64,7 +64,8 @@ return {
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 			-- rust_analyzer はnvim組み込みAPI(vim.lsp.config)で設定（Mason版はnightly/edition2024非対応のため）
-			-- cargo.target を Linux に固定: nix の ptrace API など Linux 限定 API を Mac でも解析させるため
+			-- ターゲットはプロジェクト側の .cargo/config.toml に任せる
+			-- Rustプロジェクトごとにホスト環境やベアメタル向けターゲットが異なるため、ここでは固定しない
 			vim.lsp.config("rust_analyzer", {
 				cmd = { "rustup", "run", "nightly", "rust-analyzer" },
 				root_markers = { "Cargo.toml", "rust-project.json" },
@@ -72,9 +73,6 @@ return {
 				filetypes = { "rust" },
 				settings = {
 					["rust-analyzer"] = {
-						cargo = {
-							target = "x86_64-unknown-linux-gnu",
-						},
 					},
 				},
 			})
