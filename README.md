@@ -13,6 +13,7 @@ macOS 用の個人設定ファイル群。GNU Stow でシンボリックリン�
 | `zeno/` | zeno.zsh のスニペット・補完設定 |
 | `nb/` | nb (ノートブック CLI) の設定 |
 | `claude/` | Claude Code の設定 |
+| `ghostty/` | Ghostty の設定 |
 | `lazygit/` | lazygit の設定 (`gui.language: ja` で UI 日本語化) |
 | `homebrew/` | Brewfile — Homebrew でインストールしたパッケージ一覧 |
 | `termrain/` | termrain (ターミナル天気/レーダー CLI) の設定 |
@@ -35,6 +36,7 @@ stow git
 stow zeno
 stow nb
 stow claude
+stow ghostty
 stow lazygit
 stow termrain
 ```
