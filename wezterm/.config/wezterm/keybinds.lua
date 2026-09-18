@@ -1,6 +1,23 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 
+local transparent_opacity = 0.65
+local opaque_opacity = 1.0
+
+-- Cmd+Shift+Oで透過と不透明を切り替える
+local toggle_window_opacity = wezterm.action_callback(function(window, pane)
+	local overrides = window:get_config_overrides() or {}
+	local current_opacity = overrides.window_background_opacity or transparent_opacity
+
+	if current_opacity < opaque_opacity then
+		overrides.window_background_opacity = opaque_opacity
+	else
+		overrides.window_background_opacity = transparent_opacity
+	end
+
+	window:set_config_overrides(overrides)
+end)
+
 -- 現在のペインのcwdを引き継いで新しいウィンドウを開く
 local spawn_window_with_cwd = wezterm.action_callback(function(window, pane)
 	local cwd = pane:get_current_working_dir()
@@ -30,6 +47,7 @@ end)
 
 return {
 	keys = {
+		{ key = "o", mods = "SHIFT|SUPER", action = toggle_window_opacity },
 		{ key = "Tab", mods = "CTRL", action = act.ActivateTabRelative(1) },
 		{ key = "Tab", mods = "SHIFT|CTRL", action = act.ActivateTabRelative(-1) },
 		-- Leaderの後にh/lを押して、数字レイヤーを使わずタブを移動する
