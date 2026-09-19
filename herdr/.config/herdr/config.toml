@@ -1,10 +1,5 @@
 onboarding = false
 
-[ui.toast]
-# macOS の通知センターへ通知を送る
-delivery = "system"
-delay_seconds = 1
-
 [keys]
 # Agent パネルの前後へ移動する
 previous_agent = "prefix+up"
