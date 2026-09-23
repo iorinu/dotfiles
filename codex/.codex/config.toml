@@ -1,5 +1,5 @@
-model = "gpt-6-astra"
-model_reasoning_effort = "high"
+model = "gpt-6-luna"
+model_reasoning_effort = "xhigh"
 notify = [
     "/Users/iori/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient",
     "turn-ended",
@@ -20,9 +20,15 @@ trust_level = "trusted"
 [projects."/Users/iori/src/github.com/iorinu/Slidev"]
 trust_level = "trusted"
 
+[projects."/Users/iori"]
+trust_level = "trusted"
+
+[tui]
+screen_reader_detection_done = true
+
 [tui.model_availability_nux]
 "gpt-5.6-sol" = 1
-gpt-6-astra = 3
+gpt-6-astra = 4
 
 [marketplaces.openai-bundled]
 source_type = "local"
@@ -131,8 +137,8 @@ NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = ""
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.901.51231"
-NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/iori/.codex/plugins/cache/openai-bundled/browser/26.901.51231/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+BROWSER_USE_CODEX_APP_VERSION = "26.908.40834"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/iori/.codex/plugins/cache/openai-bundled/browser/26.908.40834/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
 SKY_CUA_SERVICE_PATH = "/Users/iori/.codex/computer-use/Codex Computer Use.app"
 CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
@@ -169,3 +175,10 @@ trusted_hash = "sha256:2ebad29288ff7fb558b111a94eea88404fdd80f7739be1bea8098ddea
 
 [hooks.state."vercel@claude-plugins-official:hooks/hooks.json:session_end:0:0"]
 trusted_hash = "sha256:5612c7e3703ff80a8463df9f42b5c4c21a21578c072ea585f90ebcfca2547929"
+
+[hooks.state."vercel@claude-plugins-official:hooks/hooks.json:post_tool_use:0:0"]
+trusted_hash = "sha256:8e8342b887788e4149d3d19edddfea5bde6b45162d036fa611b32538d1dad97b"
+enabled = true
+
+[hooks.state."/Users/iori/.codex/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:8baa748103c422adf8310603adb0db97e6bce45733bb8f6e7ef260fccb62b8ff"
