@@ -275,3 +275,8 @@ eval "$(zoxide init zsh)"
 # simrem (自作リマインダー CLI)
 export PATH="$HOME/src/github.com/iorinu/simple-reminder:$PATH"
 export PATH="$HOME/.gem/ruby/2.6.0/bin:$PATH"
+
+# TypeSafe API key from macOS Keychain
+if [[ -z "${TYPESAFE_API_KEY:-}" ]]; then
+  export TYPESAFE_API_KEY="$(security find-generic-password -a "$USER" -s "typesafe-api-key" -w 2>/dev/null)"
+fi
