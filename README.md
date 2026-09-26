@@ -1,8 +1,8 @@
 # dotfiles
 
-macOS 用の個人設定ファイル群。GNU Stow でシンボリックリンクを管理する構成。
+macOSとWSL Ubuntuで使う個人設定ファイル群。
 
-Nix/Home Managerへの段階移行を準備中です。現在のセットアップは引き続きGNU Stowを使用します。Nixの実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
+Nix/Home Managerへ段階的に移行しています。macOSは引き続きGNU Stowを使い、WSLではGit、Neovim、共通CLIをHome Managerで管理します。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
 
 ## 構成
 
@@ -21,6 +21,20 @@ Nix/Home Managerへの段階移行を準備中です。現在のセットアッ�
 | `termrain/` | termrain (ターミナル天気/レーダー CLI) の設定 |
 
 ## セットアップ
+
+### WSL Ubuntu
+
+WSL用の構成名は`iori@wsl`です。現在のホスト設定は、リポジトリを`/home/iori/clone/dotfiles`へ配置する前提です。
+
+```bash
+cd /home/iori/clone/dotfiles
+nix flake check path:.
+home-manager switch --flake path:.#iori@wsl
+```
+
+Gitのユーザー名とメールアドレスはリポジトリで管理せず、`~/.config/git/local`に保存します。GitとNeovimはHome Managerが管理するため、WSLでは対応するStowパッケージを適用しないでください。
+
+### macOS
 
 ```bash
 # 1. Homebrew のインストール (未導入の場合)

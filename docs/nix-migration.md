@@ -39,15 +39,20 @@
 
 ## 現在の実装状況
 
-実装済みのNix部分は、`flake.nix`が`homeManagerModules.common`だけを公開し、`modules/home/common.nix`が共通設定を定義する段階である。共通モジュールには`programs.git`（GitHub/Gistの認証helperはPATH上の`gh`を呼び出す）、共通CLI（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`ripgrep`、`zoxide`）、既存のNeovim設定を`xdg.configFile."nvim"`へ配置する設定が含まれる。NeovimのVimTeXはmacOSでSkimを指定し、LinuxではVimTeXの既定設定に任せる。
+実装済みのNix部分は、`flake.nix`が`homeManagerModules.common`とWSL用の`homeConfigurations."iori@wsl"`を公開する。共通モジュールには`programs.git`（GitHub/Gistの認証helperはPATH上の`gh`を呼び出す）、共通CLI（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`ripgrep`、`zoxide`）、既存のNeovim設定を`xdg.configFile."nvim"`へ配置する設定が含まれる。NeovimのVimTeXはmacOSでSkimを指定し、LinuxではVimTeXの既定設定に任せる。
 
-Nixpkgs/Home Managerの入力、`flake.lock`、`homeConfigurations`やホスト出力、ユーザー名・ホームディレクトリ・`stateVersion`の定義はまだない。したがって、現時点ではホスト向けのHome Manager構成ではなく、評価・ビルドも未検証である。macOSにはNix CLIがなく、Home Managerは適用していない。macOSのNeovim設定配置は引き続きStowが管理している。
+Nixpkgs/Home Managerの入力は`flake.lock`で固定している。WSL用ホスト構成はユーザー`iori`、ホームディレクトリ`/home/iori`、`stateVersion = "24.05"`を使用する。Gitのユーザー名とメールアドレスはホスト固有情報としてリポジトリでは管理せず、`~/.config/git/local`から読み込む。WSLでは公式Nix 2.35.2のシングルユーザー構成を使用し、Home Managerの評価、ビルド、適用まで確認済みである。macOSにはまだ適用しておらず、macOSのNeovim設定配置は引き続きStowが管理している。
 
-## WSL側で残る作業
+## WSL側での更新
 
-この実装状況は、既定の移行方針（WSL Ubuntuから試し、macOSを先に切り替えない）を変更しない。WSL側では、実環境のOS・アーキテクチャ・ユーザー情報などを確認したうえで、Nixの導入方式とFlakeの有効化、Nixpkgs/Home Manager入力とロック、WSL用ホスト構成および必要なユーザー設定を整える必要がある。ホスト名、ユーザー名、ホームディレクトリ、`stateVersion`は実環境で確認して決める。
+この実装状況は、既定の移行方針（WSL Ubuntuから試し、macOSを先に切り替えない）を変更しない。現在のWSL構成を更新するときは、リポジトリのルートで次を実行する。
 
-その後、既存Ubuntuへの影響とPATHを確認し、`nix flake check`・対象構成のビルド・適用後の動作を検証する。設定ファイルを移す際は受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。Nix CLIがmacOSにないため、macOS側の評価やビルドも未実施であり、WSLで共通部分を検証した後に既定の段階移行方針に沿って扱う。
+```sh
+nix flake check path:.
+home-manager switch --flake path:.#iori@wsl
+```
+
+GitとNeovimはHome Managerへ移行済みなので、WSLでは対応するStowパッケージを再適用しない。設定ファイルを追加で移す際も、受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。macOS側の適用は未実施であり、WSLで共通部分を検証した後に既定の段階移行方針に沿って扱う。
 
 現在の`.zshrc`には、次のようなmacOS固有の記述がある。これをそのまま共通設定としてWSLへ配置してはいけない。
 
