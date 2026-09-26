@@ -20,13 +20,20 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      macosPkgs = nixpkgs.legacyPackages.aarch64-darwin;
     in
     {
       homeManagerModules.common = import ./modules/home/common.nix;
+      homeManagerModules.git = import ./modules/home/git.nix;
 
       homeConfigurations."iori@wsl" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [ ./hosts/wsl-ubuntu.nix ];
+      };
+
+      homeConfigurations."iori@macos" = home-manager.lib.homeManagerConfiguration {
+        pkgs = macosPkgs;
+        modules = [ ./hosts/macos.nix ];
       };
     };
 }

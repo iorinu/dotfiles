@@ -2,7 +2,7 @@
 
 macOSとWSL Ubuntuで使う個人設定ファイル群。
 
-Nix/Home Managerへ段階的に移行しています。macOSは引き続きGNU Stowを使い、WSLではGit、Neovim、共通CLIをHome Managerで管理します。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
+Nix/Home Managerへ段階的に移行しています。FlakeにはmacOS向けの`iori@macos`出力を宣言し、共通CLIとNeovimを設定していますが、macOSには適用していません。macOSのライブ設定パスは引き続きGNU Stowが管理し、Git設定はmacOSのHome Manager対象外です。WSLではGit、Neovim、共通CLIをHome Managerで管理します。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
 
 ## 構成
 
@@ -15,7 +15,12 @@ Nix/Home Managerへ段階的に移行しています。macOSは引き続きGNU S
 | `zeno/` | zeno.zsh のスニペット・補完設定 |
 | `nb/` | nb (ノートブック CLI) の設定 |
 | `claude/` | Claude Code の設定 |
+| `.claude/` | Claude Code の skills |
+| `codex/` | Codex の設定・LaunchAgent |
 | `ghostty/` | Ghostty の設定 |
+| `herdr/` | herdr の設定 |
+| `hermes/` | Hermes の共通 SOUL・指示書、docs、skills |
+| `opencode/` | OpenCode の設定 |
 | `lazygit/` | lazygit の設定 (`gui.language: ja` で UI 日本語化) |
 | `homebrew/` | Brewfile — Homebrew でインストールしたパッケージ一覧 |
 | `termrain/` | termrain (ターミナル天気/レーダー CLI) の設定 |
@@ -24,7 +29,7 @@ Nix/Home Managerへ段階的に移行しています。macOSは引き続きGNU S
 
 ### WSL Ubuntu
 
-WSL用の構成名は`iori@wsl`です。現在のホスト設定は、リポジトリを`/home/iori/clone/dotfiles`へ配置する前提です。
+WSL用の構成名は`iori@wsl`です。現在のホスト設定は、ユーザー`iori`のホームを`/home/iori`とし、リポジトリを`/home/iori/clone/dotfiles`へ配置する前提です。NixとHome Managerを導入済みで、Flake機能が使える環境で次を実行してください。これらは導入手順ではなく、既存構成の検証・適用コマンドです。
 
 ```bash
 cd /home/iori/clone/dotfiles
@@ -32,9 +37,11 @@ nix flake check path:.
 home-manager switch --flake path:.#iori@wsl
 ```
 
-Gitのユーザー名とメールアドレスはリポジトリで管理せず、`~/.config/git/local`に保存します。GitとNeovimはHome Managerが管理するため、WSLでは対応するStowパッケージを適用しないでください。
+WSLのHome Manager設定ではGitのユーザー名とメールアドレスを設定せず、`~/.config/git/local`を読み込みます。なお、macOS向けStowソースのGit設定にはこれらの項目が残っており、別途移行するまでリポジトリ内から完全に除外された状態ではありません。GitとNeovimはWSLでHome Managerが管理するため、WSLでは対応するStowパッケージを適用しないでください。
 
 ### macOS
+
+Home Manager構成`iori@macos`は宣言済みです。macOS arm64上のNix 2.35.2で、`nix flake check`と`.#homeConfigurations.iori@macos.activationPackage`のビルドが一時スナップショット上で成功しました。checkでは既存の`unknown flake output homeManagerModules`警告が出ましたが、checkは成功しています。macOSへの適用は未実施で、ライブ設定パスの所有者は引き続きStowです。Home Managerは共通CLIとNeovim設定を対象とし、Git設定・Git identityは管理しません。
 
 ```bash
 # 1. Homebrew のインストール (未導入の場合)
@@ -56,6 +63,8 @@ stow ghostty
 stow lazygit
 stow termrain
 ```
+
+このコマンド一覧はmacOS向けの選択した基本構成です。他のパッケージは対象パスと利用環境を個別に確認してから適用してください。
 
 Brewfile を更新するには:
 

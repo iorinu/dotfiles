@@ -27,25 +27,31 @@
 | `zsh/` | `.zshrc` | 共通部分をHome Manager、OS固有部分をホスト設定 |
 | `nvim/` | Neovimとlazy.nvimの設定 | `home.file`または`xdg.configFile`から開始 |
 | `wezterm/` | WezTerm設定 | 実際にGUIを実行するOS側で管理 |
-| `git/` | `.gitconfig` | Home ManagerのGit設定または`home.file` |
+| `git/` | `.gitconfig` | WSLのみHome Managerで管理。macOSでは対象外 |
 | `zeno/` | zeno.zsh設定 | `xdg.configFile` |
 | `nb/` | nb設定 | `xdg.configFile` |
 | `claude/` | Claude Code設定 | 非認証設定だけを`home.file` |
+| `.claude/` | Claude Codeのskills | 内容と配置先を確認して移行対象を判断 |
+| `ghostty/` | Ghostty設定 | 実際にGUIを実行するOS側で管理 |
+| `herdr/` | herdr設定 | 内容と利用環境を確認して判断 |
+| `opencode/` | OpenCode設定 | 非認証設定を確認して移行対象を判断 |
 | `lazygit/` | lazygit設定 | `xdg.configFile` |
 | `termrain/` | termrain設定 | `xdg.configFile` |
 | `codex/` | Codex設定とLaunchAgent | 設定はHome Manager、LaunchAgentはmacOS専用 |
-| `hermes/` | Hermesの設定とスキル | 非ランタイム部分をHome Manager |
+| `hermes/` | 追跡対象の共通SOUL・指示書、docs、skills | Home Managerで配置 |
 | `homebrew/` | Formula、Cask、Cargo、uv、npmなど | 共通CLIはNix、GUIとNixに載せにくいものはHomebrew |
 
 ## 現在の実装状況
 
-実装済みのNix部分は、`flake.nix`が`homeManagerModules.common`とWSL用の`homeConfigurations."iori@wsl"`を公開する。共通モジュールには`programs.git`（GitHub/Gistの認証helperはPATH上の`gh`を呼び出す）、共通CLI（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`ripgrep`、`zoxide`）、既存のNeovim設定を`xdg.configFile."nvim"`へ配置する設定が含まれる。NeovimのVimTeXはmacOSでSkimを指定し、LinuxではVimTeXの既定設定に任せる。
+`flake.nix`は`x86_64-linux`向けの`homeConfigurations."iori@wsl"`と、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を宣言する。共通モジュールは共通CLI（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`ripgrep`、`zoxide`）と、`dotfiles.nvimConfigPath`から`xdg.configFile."nvim"`へNeovim設定を配置する機能を提供する。Gitは独立モジュールで、WSLのみが従来どおり読み込む（`ghq.root = "~/src"`、既定ブランチ`main`、GitHub/Gistの認証helper、`~/.config/git/local` include）。WSLホスト設定はユーザー`iori`、ホームディレクトリ`/home/iori`、`stateVersion = "24.05"`、Neovim設定ソース`/home/iori/clone/dotfiles/nvim/.config/nvim`を維持する。macOSホスト設定はユーザー`iori`、ホーム`/Users/iori`、同じstateVersion、Neovim設定ソース`/Users/iori/.dotfiles/nvim/.config/nvim`を指定し、Gitを管理しない。NeovimのVimTeXはmacOSでSkimを指定し、LinuxではVimTeXの既定設定に任せる。
 
-Nixpkgs/Home Managerの入力は`flake.lock`で固定している。WSL用ホスト構成はユーザー`iori`、ホームディレクトリ`/home/iori`、`stateVersion = "24.05"`を使用する。Gitのユーザー名とメールアドレスはホスト固有情報としてリポジトリでは管理せず、`~/.config/git/local`から読み込む。WSLでは公式Nix 2.35.2のシングルユーザー構成を使用し、Home Managerの評価、ビルド、適用まで確認済みである。macOSにはまだ適用しておらず、macOSのNeovim設定配置は引き続きStowが管理している。
+Nixpkgsは`nixos-unstable`を指定し、具体的なリビジョンを`flake.lock`で固定している。WSL側の記録ではHome Managerの評価、ビルド、適用まで確認済みである。macOS arm64ではNix 2.35.2と`--extra-experimental-features "nix-command flakes"`を使い、正確なFlake/lock/Nixモジュールを含む一時スナップショットに対して`nix flake check`と`nix build --no-link --no-write-lock-file .#homeConfigurations.iori@macos.activationPackage`が成功した。checkには既存の`unknown flake output homeManagerModules`警告が出たが、終了コード0で完了した。ビルドはHome Manager activation packageとNix store closureを取得したもので、プロファイルの切り替えやライブ設定の変更は行っていない。一時スナップショットで検証したのは、FlakeのGit入力が未追跡のmacOSホスト・Gitモジュールを含めないためであり、作業ツリーからの直接ビルド成功を示すものではない。macOS構成の適用は未実施で、Neovimを含むライブ設定パスは引き続きStowが管理する。`stow --no-folding --simulate --verbose=1 nvim`も成功し、現在の`~/.config/nvim`は既存のStowソースを参照している。Git設定とGit identityはmacOS Home Managerの対象外である。
+
+Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gist向け認証helperの動作を共有している。StowはHomebrewの絶対パスで`gh`を呼び出し、Home ManagerはPATHから`gh`を解決するため、Home Manager設定ではHomebrew固有のパスを避けられる一方、PATH上に`gh`が必要となる。
 
 ## WSL側での更新
 
-この実装状況は、既定の移行方針（WSL Ubuntuから試し、macOSを先に切り替えない）を変更しない。現在のWSL構成を更新するときは、リポジトリのルートで次を実行する。
+この実装状況は、既定の移行方針（WSL Ubuntuから試し、macOSを先に切り替えない）を変更しない。Nix/Home Managerの導入とFlake機能の有効化が済んだWSL環境で、現在の構成を更新するときはリポジトリのルートで次を実行する。
 
 ```sh
 nix flake check path:.
@@ -69,7 +75,6 @@ GitとNeovimはHome Managerへ移行済みなので、WSLでは対応するStow�
 
 macOSとWSL Ubuntuの両方に存在し、同じ動作を期待するものを共通モジュールへ置く。
 
-- Gitの基本設定
 - Zshの共通alias、関数、環境変数
 - Neovim設定
 - lazygit、zeno、nbなどの設定
@@ -200,7 +205,7 @@ Home Managerが管理する
 
 ### Phase 1: WSL UbuntuへNixを導入する
 
-WSL Ubuntu内にNixを導入し、Home Managerを利用できる状態にする。導入方法は、使用するNixのインストーラー、Flakeの有効化、systemd連携の有無を確認してから決める。
+WSL側の記録では、公式インストーラーによるNix 2.35.2のシングルユーザー構成を導入し、`nix-command`と`flakes`を有効にしてHome Managerを利用している。これはWSLの導入記録であり、このmacOSホストでの検証結果やFlakeが固定するNixのバージョンではない。systemd連携の有無は引き続き確認する。
 
 リポジトリは、可能ならWSLのLinuxファイルシステム側に配置する。`/mnt/c`配下を正本にすると、ファイルアクセスや権限、改行コード、シンボリックリンクの扱いで問題が起きやすい。
 
@@ -212,15 +217,16 @@ WSL Ubuntu内にNixを導入し、Home Managerを利用できる状態にする�
 - 既存のUbuntuのシェルやパッケージを壊していない
 - Windows側のPATHが意図せず大量に混ざっていない
 
-### Phase 2: Flakeの骨格を作る
+### Phase 2: Flakeの骨格を作る（実装・macOSビルド検証済み）
 
-共通モジュールとホストごとのエントリーポイントを作る。ホスト名やユーザー名は固定値として決め打ちせず、実際の環境で確認した値を使う。
+`flake.nix`は共通モジュールと、`x86_64-linux`向けの`homeConfigurations."iori@wsl"`、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を公開する。macOS構成は共通CLIとNeovim設定を対象に宣言し、Git設定・identityは対象外とする。macOS arm64のNix 2.35.2環境で、正確な現在のFlake/lock/Nixモジュールを含む一時スナップショットに対して`nix flake check`と`nix build --no-link --no-write-lock-file .#homeConfigurations.iori@macos.activationPackage`が成功した。checkでは既存の`unknown flake output homeManagerModules`警告が出たが、終了コード0で完了した。直接の作業ツリーからのビルド成功とは扱わない。一時スナップショットでのビルドはactivation packageとNix store closureの取得までであり、プロファイル切り替え・設定適用は行っていない。ライブ設定パスは引き続きStowが管理する。
+
+nix-darwin出力はない。Home ManagerのmacOS出力は宣言済みでcheckとactivation packageのビルド検証済みだが、ライブ環境への適用は未実施である。
 
 最初のFlakeでは、パッケージ数を絞る。
 
 ```text
 common:
-  git
   zsh
   neovim
   ripgrep
@@ -234,8 +240,11 @@ macOS only:
   HomebrewとGUIアプリ
 
 WSL only:
+  git
   Linux用の開発ツール
 ```
+
+Git設定はWSL専用であり、共通モジュールやmacOS構成には含めない。
 
 HomebrewのFormulaをすべてNixへ機械的に置き換えない。Formulaごとに、次のいずれかへ分類する。
 
@@ -244,38 +253,40 @@ HomebrewのFormulaをすべてNixへ機械的に置き換えない。Formulaご�
 - WSLでは不要にする
 - Nixで配布できるか確認してから判断する
 
-### Phase 3: WSLで共通CLIを移行する
+### Phase 3: WSLで共通CLIを移行する（一部実装済み）
 
-最初に設定ファイルを持たないCLIから移行する。これにより、Nixのパッケージ定義とPATHの扱いを先に確認できる。
+共通モジュールでは、次のCLIをWSL向けに宣言している。WSL側の記録では、Home Managerの評価、ビルド、適用まで確認済みである。この適用実績はWSLでの記録であり、ここでのmacOS環境からWSL上の実行時動作を再検証したものではない。
 
-候補:
+現在宣言しているパッケージ:
 
 - `ripgrep`
 - `fd`
 - `fzf`
-- `jq`
 - `bat`
-- `zoxide`
+- `gh`
+- `ghq`
+- `jq`
 - `lazygit`
 - `neovim`
+- `zoxide`
 
-Python、Node、Rustの実行環境もこの段階で対象にする。ただし、プロジェクトごとの依存関係は各プロジェクトの`pyproject.toml`、`package.json`、`Cargo.toml`、ロックファイルを正本とし、Home Managerのグローバルパッケージに過剰に詰め込まない。
+実行時の確認はWSL環境で別途行う。Python、Node、Rustのグローバルな実行環境は現在の共通モジュールでは宣言しておらず、今後必要性を確認して対象にする。プロジェクトごとの依存関係は各プロジェクトの`pyproject.toml`、`package.json`、`Cargo.toml`、ロックファイルを正本とし、Home Managerのグローバルパッケージに過剰に詰め込まない。
 
-### Phase 4: 設定ファイルを1つずつ移行する
+### Phase 4: 設定ファイルを1つずつ移行する（一部実装済み）
 
-設定ファイルは一度に全部切り替えない。次の順番を基本とする。
+WSLではGit設定と既存のNeovim設定配置がHome Managerへ移行済みである（WSL側の記録）。その他の設定とmacOS側は未移行であり、引き続き対象ごとに切り替える。
 
-1. Git
-2. lazygit
-3. zeno、nb、termrain
-4. Neovim
-5. Zsh
-6. Claude Code、Codex、Hermes
-7. WezTerm
+未移行の設定は一度に全部切り替えず、次の順番を基本とする。
+
+1. lazygit設定
+2. zeno、nb、termrain
+3. Zsh
+4. Claude Code、Codex、Hermes
+5. WezTerm
 
 各項目で次の手順を繰り返す。
 
-1. 現在のStowパッケージと配置先を確認する
+1. 対象が未移行であることを確認し、現在のStowパッケージと配置先を確認する
 2. Nix側の配置先を定義する
 3. `nix flake check`とビルドを実行する
 4. 既存の配置先をバックアップする
@@ -489,9 +500,9 @@ NixとStowを同時に適用して解決しようとしない。
 2. 実験用PCでWezTermをWindowsとWSLのどちらから起動するか
 3. macOSのシステム設定までnix-darwinで管理するか
 4. HomebrewのFormulaをどこまでNixへ移すか
-5. Nixの導入方式と、Flakeで固定するNixpkgsの世代
-6. Neovimのプラグインをlazy.nvimのまま使うか、Nixでも管理するか
-7. macOSとWSLで同じZsh設定をどこまで共有するか
-8. NixOS-WSLへの移行を将来行うか
+5. Neovimのプラグインをlazy.nvimのまま使うか、Nixでも管理するか
+6. macOSとWSLで同じZsh設定をどこまで共有するか
+7. NixOS-WSLへの移行を将来行うか
+8. macOS/Stow用`git/.gitconfig`に残るGitのユーザー名・メールアドレス設定を、WSLの`~/.config/git/local`方式とどう整合させるか
 
-これらが決まるまでは、既存のStow構成を削除しない。最初の実装範囲は、WSL UbuntuのNix導入、共通CLI、Git、Neovimの設定配置までに限定する。
+これらが決まるまでは、移行対象の設定が検証済みになるまで既存のStow構成を削除しない。WSL UbuntuへのNix導入、共通CLI、Git、Neovimの設定配置は実装済みであり、残る作業は他のパッケージの移行、macOSへの適用、および上記の未決事項の確認である。

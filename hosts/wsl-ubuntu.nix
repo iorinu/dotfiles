@@ -2,6 +2,7 @@
 {
   imports = [
     ../modules/home/common.nix
+    ../modules/home/git.nix
     ../modules/home/wsl.nix
   ];
 
