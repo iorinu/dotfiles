@@ -41,7 +41,7 @@ WSLのHome Manager設定ではGitのユーザー名とメールアドレスを�
 
 ### macOS
 
-Home Manager構成`iori@macos`は宣言済みです。macOS arm64上のNix 2.35.2で、`nix flake check`と`.#homeConfigurations.iori@macos.activationPackage`のビルドが一時スナップショット上で成功しました。checkでは既存の`unknown flake output homeManagerModules`警告が出ましたが、checkは成功しています。macOSへの適用は未実施で、ライブ設定パスの所有者は引き続きStowです。Home Managerは共通CLIとNeovim設定を対象とし、Git設定・Git identityは管理しません。
+Home Manager構成`iori@macos`は宣言済みです。macOS arm64上のNix 2.35.2で、リポジトリから直接`nix --extra-experimental-features "nix-command flakes" flake check --no-write-lock-file`と`nix --extra-experimental-features "nix-command flakes" build --no-link --no-write-lock-file '.#homeConfigurations."iori@macos".activationPackage'`が成功しました。checkでは既存の`unknown flake output homeManagerModules`警告が出ましたが、checkは成功しています。ビルドは適用しておらず、ライブ設定に変更はありません。ライブ設定パスの所有者は引き続きStowです。Home Managerは共通CLIとNeovim設定を対象とし、Git設定・Git identityは管理しません。
 
 ```bash
 # 1. Homebrew のインストール (未導入の場合)
