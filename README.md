@@ -2,7 +2,7 @@
 
 macOSとWSL Ubuntuで使う個人設定ファイル群。
 
-Nix/Home Managerへ段階的に移行しています。FlakeにはmacOS向けの`iori@macos`出力を宣言し、共通CLIとNeovimを設定していますが、macOSには適用していません。macOSのライブ設定パスは引き続きGNU Stowが管理し、Git設定はmacOSのHome Manager対象外です。WSLではGit、Neovim、共通CLIをHome Managerで管理します。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
+Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、共通CLIをHome Managerで管理し、macOSでも`iori@macos`を適用済みです。macOSでは共通CLIとNeovim設定をHome Managerが管理し、Git設定・identityは対象外、その他の設定は引き続きStowが管理します。Homebrewの共通CLIパッケージはまだ削除していないため、Nixとの重複があります。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
 
 ## 構成
 
@@ -41,7 +41,7 @@ WSLのHome Manager設定ではGitのユーザー名とメールアドレスを�
 
 ### macOS
 
-Home Manager構成`iori@macos`は宣言済みです。macOS arm64上のNix 2.35.2で、リポジトリから直接`nix --extra-experimental-features "nix-command flakes" flake check --no-write-lock-file`と`nix --extra-experimental-features "nix-command flakes" build --no-link --no-write-lock-file '.#homeConfigurations."iori@macos".activationPackage'`が成功しました。checkでは既存の`unknown flake output homeManagerModules`警告が出ましたが、checkは成功しています。ビルドは適用しておらず、ライブ設定に変更はありません。ライブ設定パスの所有者は引き続きStowです。Home Managerは共通CLIとNeovim設定を対象とし、Git設定・Git identityは管理しません。
+Home Manager構成`iori@macos`は適用済みで、`home-manager generations`ではgeneration 1が現在の世代です。macOS arm64上で`nix flake check --no-write-lock-file`が実験機能フラグなしで成功しています。既存の`unknown flake output homeManagerModules`警告は出ます。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を管理します。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決されます。`~/.config/nvim`はHome Managerのリンクで、リポジトリのNeovim設定を参照しています。適用前のStowリンクは`~/.config/nvim.stow-backup`に保存されています。NeovimはNVIM v0.12.5ですが、設定を読み込んだ完全な起動確認はしていません。Git設定・Git identityはHome Managerの対象外で、その他のmacOS設定はStow管理です。Homebrewの共通CLIパッケージは未削除のため、当面Nixと重複しています。
 
 ```bash
 # 1. Homebrew のインストール (未導入の場合)
@@ -53,7 +53,6 @@ brew bundle --file=~/.dotfiles/homebrew/Brewfile
 # 3. Stow でシンボリックリンクを作成
 cd ~/.dotfiles
 stow zsh
-stow nvim
 stow wezterm
 stow git
 stow zeno
@@ -63,6 +62,8 @@ stow ghostty
 stow lazygit
 stow termrain
 ```
+
+このMacではNeovim設定をHome Managerへ移行済みです。`stow nvim`は実行しないでください。StowのNeovim設定は`~/.config/nvim.stow-backup`に保存されています。
 
 このコマンド一覧はmacOS向けの選択した基本構成です。他のパッケージは対象パスと利用環境を個別に確認してから適用してください。
 

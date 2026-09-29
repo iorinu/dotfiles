@@ -45,7 +45,7 @@
 
 `flake.nix`は`x86_64-linux`向けの`homeConfigurations."iori@wsl"`と、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を宣言する。共通モジュールは共通CLI（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`ripgrep`、`zoxide`）と、`dotfiles.nvimConfigPath`から`xdg.configFile."nvim"`へNeovim設定を配置する機能を提供する。Gitは独立モジュールで、WSLのみが従来どおり読み込む（`ghq.root = "~/src"`、既定ブランチ`main`、GitHub/Gistの認証helper、`~/.config/git/local` include）。WSLホスト設定はユーザー`iori`、ホームディレクトリ`/home/iori`、`stateVersion = "24.05"`、Neovim設定ソース`/home/iori/clone/dotfiles/nvim/.config/nvim`を維持する。macOSホスト設定はユーザー`iori`、ホーム`/Users/iori`、同じstateVersion、Neovim設定ソース`/Users/iori/.dotfiles/nvim/.config/nvim`を指定し、Gitを管理しない。NeovimのVimTeXはmacOSでSkimを指定し、LinuxではVimTeXの既定設定に任せる。
 
-Nixpkgsは`nixos-unstable`を指定し、具体的なリビジョンを`flake.lock`で固定している。WSL側の記録ではHome Managerの評価、ビルド、適用まで確認済みである。macOS arm64ではNix 2.35.2を使い、リポジトリから直接`nix --extra-experimental-features "nix-command flakes" flake check --no-write-lock-file`と`nix --extra-experimental-features "nix-command flakes" build --no-link --no-write-lock-file '.#homeConfigurations."iori@macos".activationPackage'`が成功した。checkには既存の`unknown flake output homeManagerModules`警告が出たが、終了コード0で完了した。ビルドは適用しておらず、プロファイル切り替えやライブ設定の変更は行っていない。macOS構成の適用は未実施で、Neovimを含むライブ設定パスは引き続きStowが管理する。`stow --no-folding --simulate --verbose=1 nvim`も成功し、現在の`~/.config/nvim`は既存のStowソースを参照している。Git設定とGit identityはmacOS Home Managerの対象外である。
+Nixpkgsは`nixos-unstable`を指定し、具体的なリビジョンを`flake.lock`で固定している。WSL側ではHome Managerの評価、ビルド、適用まで確認済みである。macOS arm64ではHome Managerの`iori@macos`へのswitchが成功し、`home-manager generations`ではgeneration 1が現在の世代として報告される。`nix flake check --no-write-lock-file`も実験機能フラグなしで成功するが、既存の`unknown flake output homeManagerModules`警告が出る。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を有効化する。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決される。`~/.config/nvim`はHome Managerのリンクとなり、リポジトリのNeovim設定を参照する。以前のStowリンクは`~/.config/nvim.stow-backup`に保存されている。`nvim --version`はNVIM v0.12.5を示すが、設定の完全な起動確認は未実施である。Git設定とGit identityはmacOS Home Managerの対象外で、その他のmacOS設定は引き続きStowが管理する。Homebrewの共通CLIパッケージは削除しておらず、現在はNixと重複している。
 
 Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gist向け認証helperの動作を共有している。StowはHomebrewの絶対パスで`gh`を呼び出し、Home ManagerはPATHから`gh`を解決するため、Home Manager設定ではHomebrew固有のパスを避けられる一方、PATH上に`gh`が必要となる。
 
@@ -58,7 +58,7 @@ nix flake check path:.
 home-manager switch --flake path:.#iori@wsl
 ```
 
-GitとNeovimはHome Managerへ移行済みなので、WSLでは対応するStowパッケージを再適用しない。設定ファイルを追加で移す際も、受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。macOS側の適用は未実施であり、WSLで共通部分を検証した後に既定の段階移行方針に沿って扱う。
+GitとNeovimはHome Managerへ移行済みなので、WSLでは対応するStowパッケージを再適用しない。設定ファイルを追加で移す際も、受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。移行方針どおりWSLを最初の試験対象とした後、macOSにもHome Managerを適用済みである。macOSではNeovimのStowパッケージを再適用しない。
 
 現在の`.zshrc`には、次のようなmacOS固有の記述がある。これをそのまま共通設定としてWSLへ配置してはいけない。
 
@@ -217,11 +217,11 @@ WSL側の記録では、公式インストーラーによるNix 2.35.2のシン�
 - 既存のUbuntuのシェルやパッケージを壊していない
 - Windows側のPATHが意図せず大量に混ざっていない
 
-### Phase 2: Flakeの骨格を作る（実装・macOSビルド検証済み）
+### Phase 2: Flakeの骨格を作る（実装済み・macOS適用済み）
 
-`flake.nix`は共通モジュールと、`x86_64-linux`向けの`homeConfigurations."iori@wsl"`、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を公開する。macOS構成は共通CLIとNeovim設定を対象に宣言し、Git設定・identityは対象外とする。macOS arm64のNix 2.35.2環境で、リポジトリから直接`nix --extra-experimental-features "nix-command flakes" flake check --no-write-lock-file`と`nix --extra-experimental-features "nix-command flakes" build --no-link --no-write-lock-file '.#homeConfigurations."iori@macos".activationPackage'`が成功した。checkでは既存の`unknown flake output homeManagerModules`警告が出たが、終了コード0で完了した。ビルドは適用しておらず、プロファイル切り替え・ライブ設定の変更は行っていない。ライブ設定パスは引き続きStowが管理する。
+`flake.nix`は共通モジュールと、`x86_64-linux`向けの`homeConfigurations."iori@wsl"`、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を公開する。macOS構成は共通CLIとNeovim設定を対象にし、Git設定・identityは対象外とする。macOS arm64で`nix flake check --no-write-lock-file`が実験機能フラグなしで成功し、既存の`unknown flake output homeManagerModules`警告が出ることを確認した。さらにHome Managerのswitchが成功し、現在の世代はgeneration 1である。Neovim設定のリンク先はリポジトリ内の設定で、Stow時代のリンクは`~/.config/nvim.stow-backup`に保持している。Gitとその他のmacOSライブ設定はHome Managerへ移しておらず、引き続きGitは対象外、その他はStow管理である。
 
-nix-darwin出力はない。Home ManagerのmacOS出力は宣言済みでcheckとactivation packageのビルド検証済みだが、ライブ環境への適用は未実施である。
+nix-darwin出力はない。Home ManagerのmacOS出力はcheck済みで、ライブ環境への適用も完了している。これはmacOSユーザー環境の移行であり、システム設定や他のStowパッケージを含む移行全体の完了を意味しない。
 
 最初のFlakeでは、パッケージ数を絞る。
 
@@ -322,9 +322,9 @@ WSL:
 
 Home Managerの`programs.zsh`を使う場合も、共通設定とOS固有設定を同じ文字列に埋め込まず、モジュールを分ける。シェルの起動時間とエラーをmacOS、WSLの両方で確認する。
 
-### Phase 6: macOSへ同じFlakeを適用する
+### Phase 6: macOSへ同じFlakeを適用する（適用済み・確認継続）
 
-WSLで共通部分が安定したら、macOSを対象にする。macOSでは、Home Managerの適用とHomebrewの適用を分けて考える。
+既定の順序どおりWSLで共通部分を試した後、macOSへ同じFlakeを適用した。macOSではHome Managerの適用とHomebrewの適用を分けて扱う。現在はHome Managerの世代1が有効であり、Home Managerの対象CLIとNeovim設定はNixから解決される。Neovimの設定起動確認やHomebrew側の重複パッケージ整理などは引き続き残る。
 
 ```text
 Home Manager:
@@ -337,7 +337,7 @@ nix-darwin:
   必要になったmacOSシステム設定
 ```
 
-macOSのHomebrew CaskをWSL用の設定へ持ち込まない。`homebrew/Brewfile`は、最終的にmacOS専用のマニフェストとして残すか、nix-darwinのHomebrew設定へ移す。
+macOSのHomebrew CaskをWSL用の設定へ持ち込まない。Homebrewの共通CLIパッケージはまだ削除していないため、Nixとの重複を整理する。`homebrew/Brewfile`は、最終的にmacOS専用のマニフェストとして残すか、nix-darwinのHomebrew設定へ移す。
 
 ### Phase 7: 残ったStowパッケージを整理する
 
@@ -428,7 +428,7 @@ darwin-rebuild build --flake .#<mac-host>
 
 ### 既存Stow構成の検証
 
-移行しないパッケージについては、引き続きGNU Stowのsimulationを実行する。
+移行しないパッケージについては、引き続きGNU Stowのsimulationを実行する。macOSではNeovim設定がHome Managerの管理下に移ったため、`stow nvim`やNeovimパッケージのStow simulationを実行しない。
 
 ```text
 stow --no-folding --simulate --verbose=1 <package>
@@ -505,4 +505,4 @@ NixとStowを同時に適用して解決しようとしない。
 7. NixOS-WSLへの移行を将来行うか
 8. macOS/Stow用`git/.gitconfig`に残るGitのユーザー名・メールアドレス設定を、WSLの`~/.config/git/local`方式とどう整合させるか
 
-これらが決まるまでは、移行対象の設定が検証済みになるまで既存のStow構成を削除しない。WSL UbuntuへのNix導入、共通CLI、Git、Neovimの設定配置は実装済みであり、残る作業は他のパッケージの移行、macOSへの適用、および上記の未決事項の確認である。
+これらが決まるまでは、移行対象の設定が検証済みになるまで既存のStow構成を削除しない。WSL UbuntuへのNix導入、共通CLI、Git、Neovimの設定配置と、macOSのHome Manager適用（共通CLI・Neovim）は実施済みである。残る作業はmacOS Neovim設定の起動確認、HomebrewとNixで重複する共通CLIの整理、他のパッケージの移行、および上記の未決事項の確認であり、移行全体は完了していない。
