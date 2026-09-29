@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   imports = [ ../modules/home/common.nix ];
 
@@ -9,6 +9,9 @@
   };
 
   dotfiles.nvimConfigPath = "/Users/iori/.dotfiles/nvim/.config/nvim";
+
+  xdg.configFile."lazygit/config.yml".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/lazygit/.config/lazygit/config.yml";
 
   nix.settings.experimental-features = [
     "nix-command"

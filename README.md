@@ -2,7 +2,7 @@
 
 macOSとWSL Ubuntuで使う個人設定ファイル群。
 
-Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、共通CLIをHome Managerで管理し、macOSでも`iori@macos`を適用済みです。macOSでは共通CLIとNeovim設定をHome Managerが管理し、Git設定・identityは対象外、その他の設定は引き続きStowが管理します。Homebrewの共通CLIパッケージはまだ削除していないため、Nixとの重複があります。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
+Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、共通CLIをHome Managerで管理し、macOSでも`iori@macos`を適用済みです。macOSでは共通CLI、Neovim設定、lazygitの`config.yml`をHome Managerが管理し、Git設定・identityは対象外、その他の設定は引き続きStowが管理します。Homebrewの共通CLIパッケージはまだ削除していないため、Nixとの重複があります。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
 
 ## 構成
 
@@ -41,7 +41,7 @@ WSLのHome Manager設定ではGitのユーザー名とメールアドレスを�
 
 ### macOS
 
-Home Manager構成`iori@macos`は適用済みで、`home-manager generations`ではgeneration 1が現在の世代です。macOS arm64上で`nix flake check --no-write-lock-file`が実験機能フラグなしで成功しています。既存の`unknown flake output homeManagerModules`警告は出ます。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を管理します。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決されます。`~/.config/nvim`はHome Managerのリンクで、リポジトリのNeovim設定を参照しています。適用前のStowリンクは`~/.config/nvim.stow-backup`に保存されています。NeovimはNVIM v0.12.5ですが、設定を読み込んだ完全な起動確認はしていません。Git設定・Git identityはHome Managerの対象外で、その他のmacOS設定はStow管理です。Homebrewの共通CLIパッケージは未削除のため、当面Nixと重複しています。
+Home Manager構成`iori@macos`は適用済みで、`home-manager generations`ではgeneration 2が現在の世代、generation 1が利用可能です。macOS arm64上で`nix flake check --no-write-lock-file`とmacOS activation packageのビルドが成功しています。既存の`unknown flake output homeManagerModules`警告は出ます。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を管理します。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決されます。`~/.config/nvim`はHome ManagerのリンクでリポジトリのNeovim設定を参照し、ヘッドレス起動で設定読み込みを確認済みです（設定済みプラグインディレクトリ51個、起動時ロード23個。遅延ロードされる個別プラグインの動作は未確認）。VimTeXの`view_method`は`skim`です。NeovimのStowリンクは`~/.config/nvim.stow-backup`に保存されています。`~/.config/lazygit`は実ディレクトリで、Home Manager管理の`config.yml`リンクがリポジトリの設定を参照します。以前のStowディレクトリリンクは`~/.config/lazygit.stow-backup`に保存されています。`state.yml`と`github_pull_requests.json`はHome Managerの管理対象ではなく、ライブディレクトリ内の個別リンクから元のリポジトリパスを参照します。Nix版lazygit v0.65.1で実設定を使った一時リポジトリの起動を確認し、日本語UIが表示され、`q`で終了しました。元の状態ファイルを使わずに設定の読み込みを確認しています。Git設定・Git identityはHome Managerの対象外で、その他のmacOS設定はStow管理です。Homebrewの共通CLIパッケージは未削除のため、当面Nixと重複しています。
 
 ```bash
 # 1. Homebrew のインストール (未導入の場合)
@@ -59,11 +59,10 @@ stow zeno
 stow nb
 stow claude
 stow ghostty
-stow lazygit
 stow termrain
 ```
 
-このMacではNeovim設定をHome Managerへ移行済みです。`stow nvim`は実行しないでください。StowのNeovim設定は`~/.config/nvim.stow-backup`に保存されています。
+このMacではNeovim設定とlazygitの設定をHome Managerへ移行済みです。`stow nvim`と`stow lazygit`は実行しないでください。Stow時代のリンクはそれぞれ`~/.config/nvim.stow-backup`、`~/.config/lazygit.stow-backup`に保存されています。WSLのlazygit設定は未移行です。
 
 このコマンド一覧はmacOS向けの選択した基本構成です。他のパッケージは対象パスと利用環境を個別に確認してから適用してください。
 
