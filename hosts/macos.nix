@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   imports = [ ../modules/home/common.nix ];
 
@@ -9,6 +9,12 @@
   };
 
   dotfiles.nvimConfigPath = "/Users/iori/.dotfiles/nvim/.config/nvim";
+
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+  nix.package = pkgs.nix;
 
   programs.home-manager.enable = true;
 }
