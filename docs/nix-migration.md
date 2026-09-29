@@ -18,7 +18,7 @@
 
 ## 現在の構成
 
-現在はGNU Stowでパッケージごとのファイルをホームディレクトリへ配置している。Homebrewのパッケージ一覧は`homebrew/Brewfile`で管理している。
+現在はGNU Stowでパッケージごとのファイルをホームディレクトリへ配置しているが、WSLの共通CLI・Git・NeovimとmacOSの共通CLI・Neovim設定はHome Managerへ移行済みである。Homebrewのパッケージ一覧は`homebrew/Brewfile`で管理している。
 
 主なパッケージは次のとおり。
 
@@ -48,6 +48,37 @@
 Nixpkgsは`nixos-unstable`を指定し、具体的なリビジョンを`flake.lock`で固定している。WSL側ではHome Managerの評価、ビルド、適用まで確認済みである。macOS arm64ではHome Managerの`iori@macos`へのswitchが成功し、`home-manager generations`ではgeneration 1が現在の世代として報告される。`nix flake check --no-write-lock-file`も実験機能フラグなしで成功するが、既存の`unknown flake output homeManagerModules`警告が出る。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を有効化する。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決される。`~/.config/nvim`はHome Managerのリンクとなり、リポジトリのNeovim設定を参照する。以前のStowリンクは`~/.config/nvim.stow-backup`に保存されている。`nvim --version`はNVIM v0.12.5を示すが、設定の完全な起動確認は未実施である。Git設定とGit identityはmacOS Home Managerの対象外で、その他のmacOS設定は引き続きStowが管理する。Homebrewの共通CLIパッケージは削除しておらず、現在はNixと重複している。
 
 Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gist向け認証helperの動作を共有している。StowはHomebrewの絶対パスで`gh`を呼び出し、Home ManagerはPATHから`gh`を解決するため、Home Manager設定ではHomebrew固有のパスを避けられる一方、PATH上に`gh`が必要となる。
+
+## 未完了の作業
+
+以下は現在の実装状況に基づく次の作業である。「適用済み」はHome Managerの適用記録を指し、アプリケーションの完全な動作確認まで済んだことを意味しない。
+
+### 検証が残っている項目
+
+| 状態 | 次の作業 | 確認方法 |
+|---|---|---|
+| macOS適用済み・未検証 | Neovim設定とlazy.nvimプラグイン一式のヘッドレス起動 | プラグインの自動取得などの副作用を把握したうえで、実機で起動確認する。現設定は`lazy.lua`から各プラグイン群を読み込むが、プラグイン管理は引き続きlazy.nvimである |
+| WSL適用済み・再確認未実施 | CLI、Git、Neovimの実行時確認とOS固有設定の混入確認 | WSLで`command -v`、基本動作、PATHを確認し、Windows側PATHやmacOS固有パスが意図せず優先されないことを確認する |
+| 適用済み・証跡未整理 | 両ホストでのロールバック手順 | 現在世代、適用前のFlakeリビジョン、対象ファイルのリンク先と退避先を記録し、世代の確認・復帰方法を導入方式ごとに確認する |
+
+### 次に移行する設定・整理
+
+| 状態 | 対象と次の作業 |
+|---|---|
+| 未移行 | lazygitの設定を配置先とStow所有状態を確認してからHome Managerへ移し、起動確認する |
+| 未移行 | zeno、nb、termrainの設定を個別に移し、各アプリで読み込みを確認する |
+| 未移行 | Zshを共通設定とmacOS/WSL固有設定に分け、両ホストで`zsh -n`と新しい対話シェルを確認する |
+| 未移行・要内容確認 | Claude Code、Codex、Hermes、OpenCodeの非認証設定だけを対象にする。対象ファイルと配置先を確認し、認証情報・履歴・ランタイムデータを除外してから設定読み込みを確認する |
+| 未移行・ホスト所有 | WezTermなどのGUI設定は実際にGUIを動かすOSを特定し、そのOS側の配置方法を決めて確認する |
+| 重複あり | HomebrewとNixの共通CLIをFormulaごとに分類し、Nixへ寄せるものとHomebrewに残すものを決めてから重複を整理する |
+
+### 対象ごとに判断する事項
+
+- WSLでsystemdを使うか、WezTermをWindowsとWSLのどちらで実行するかを実機で確認する。WezTermの移行前に実行ホストと設定の所有境界を決める。
+- macOSのシステム設定をnix-darwinで管理する範囲と、将来NixOS-WSLへ移行するかを必要性に応じて判断する。現状nix-darwin出力はない。
+- Homebrew FormulaをNix、Homebrew、WSLでは不要、要調査に分類する。
+- Neovimプラグインは現在lazy.nvimが管理している。Nix管理へ変更するかは未決であり、変更する場合も別途評価する。
+- macOSのGit設定は引き続きStow所有とし、Home Managerの対象外とする。Git identity設定をWSLの`~/.config/git/local`方式とどう整合させるかは未決である。
 
 ## WSL側での更新
 
@@ -274,7 +305,7 @@ HomebrewのFormulaをすべてNixへ機械的に置き換えない。Formulaご�
 
 ### Phase 4: 設定ファイルを1つずつ移行する（一部実装済み）
 
-WSLではGit設定と既存のNeovim設定配置がHome Managerへ移行済みである（WSL側の記録）。その他の設定とmacOS側は未移行であり、引き続き対象ごとに切り替える。
+WSLではGit設定と既存のNeovim設定配置がHome Managerへ移行済みである（WSL側の記録）。macOSでは共通CLIとNeovim設定を適用済みである。これら以外の設定は未移行であり、引き続き対象ごとに切り替える。
 
 未移行の設定は一度に全部切り替えず、次の順番を基本とする。
 
@@ -497,12 +528,12 @@ NixとStowを同時に適用して解決しようとしない。
 次の事項は、実機の状態を確認してから決める。
 
 1. WSL内でsystemdを使用するか
-2. 実験用PCでWezTermをWindowsとWSLのどちらから起動するか
+2. 実験用PCでWezTermをWindowsとWSLのどちらから起動するか（設定の所有境界を決める）
 3. macOSのシステム設定までnix-darwinで管理するか
 4. HomebrewのFormulaをどこまでNixへ移すか
-5. Neovimのプラグインをlazy.nvimのまま使うか、Nixでも管理するか
+5. 現在lazy.nvimが管理するNeovimプラグインを、引き続きlazy.nvimに任せるかNix管理へ変更するか
 6. macOSとWSLで同じZsh設定をどこまで共有するか
 7. NixOS-WSLへの移行を将来行うか
-8. macOS/Stow用`git/.gitconfig`に残るGitのユーザー名・メールアドレス設定を、WSLの`~/.config/git/local`方式とどう整合させるか
+8. macOSのGit設定はStow所有、Home Manager対象外とする。Git identity設定をWSLの`~/.config/git/local`方式とどう整合させるか
 
-これらが決まるまでは、移行対象の設定が検証済みになるまで既存のStow構成を削除しない。WSL UbuntuへのNix導入、共通CLI、Git、Neovimの設定配置と、macOSのHome Manager適用（共通CLI・Neovim）は実施済みである。残る作業はmacOS Neovim設定の起動確認、HomebrewとNixで重複する共通CLIの整理、他のパッケージの移行、および上記の未決事項の確認であり、移行全体は完了していない。
+未決事項の判断を移行の一律の前提条件にはしない。対象ごとに検証が済むまでは対応するStow構成を残す。WSL UbuntuへのNix導入、共通CLI、Git、Neovimの設定配置と、macOSのHome Manager適用（共通CLI・Neovim）は実施済みである。Neovim設定の完全な起動確認、WSLの実行時再確認、ロールバック証跡、HomebrewとNixで重複する共通CLIの整理、その他の設定移行が残っており、移行全体は完了していない。
