@@ -8,6 +8,9 @@
     stateVersion = "24.05";
   };
 
+  home.file.".zshrc".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/modules/home/zsh/macos.zsh";
+
   dotfiles.nvimConfigPath = "/Users/iori/.dotfiles/nvim/.config/nvim";
 
   xdg.configFile."lazygit/config.yml".source =

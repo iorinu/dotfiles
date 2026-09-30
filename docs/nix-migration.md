@@ -18,13 +18,13 @@
 
 ## 現在の構成
 
-現在はGNU Stowでパッケージごとのファイルをホームディレクトリへ配置しているが、WSLの共通CLI・Git・NeovimとmacOSの共通CLI・Neovim設定・lazygit設定に加え、zeno、nb、termrainの設定配置はHome Managerへ移行済みである。WSLのlazygit、zeno、nb、termrain設定は未移行。Homebrewのパッケージ一覧は`homebrew/Brewfile`で管理している。
+現在はGNU Stowでパッケージごとのファイルをホームディレクトリへ配置しているが、WSLの共通CLI・Git・NeovimとmacOSの共通CLI・Neovim設定・Zsh・lazygit設定に加え、zeno、nb、termrainの設定配置はHome Managerへ移行済みである。WSLのZsh、lazygit、zeno、nb、termrain設定は未移行である。Homebrewのパッケージ一覧は`homebrew/Brewfile`で管理している。
 
 主なパッケージは次のとおり。
 
 | パッケージ | 主な内容 | 移行候補 |
 |---|---|---|
-| `zsh/` | `.zshrc` | 共通部分をHome Manager、OS固有部分をホスト設定 |
+| `zsh/` | 旧Stow用`.zshrc`ソース | macOSの有効なエントリポイントは`modules/home/zsh/macos.zsh`。WSLのZshは未移行 |
 | `nvim/` | Neovimとlazy.nvimの設定 | `home.file`または`xdg.configFile`から開始 |
 | `wezterm/` | WezTerm設定 | 実際にGUIを実行するOS側で管理 |
 | `git/` | `.gitconfig` | WSLのみHome Managerで管理。macOSでは対象外 |
@@ -45,7 +45,7 @@
 
 `flake.nix`は`x86_64-linux`向けの`homeConfigurations."iori@wsl"`と、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を宣言する。共通モジュールは共通CLI（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`ripgrep`、`zoxide`）と、`dotfiles.nvimConfigPath`から`xdg.configFile."nvim"`へNeovim設定を配置する機能を提供する。Gitは独立モジュールで、WSLのみが従来どおり読み込む（`ghq.root = "~/src"`、既定ブランチ`main`、GitHub/Gistの認証helper、`~/.config/git/local` include）。WSLホスト設定はユーザー`iori`、ホームディレクトリ`/home/iori`、`stateVersion = "24.05"`、Neovim設定ソース`/home/iori/clone/dotfiles/nvim/.config/nvim`を維持する。macOSホスト設定はユーザー`iori`、ホーム`/Users/iori`、同じstateVersion、Neovim設定ソース`/Users/iori/.dotfiles/nvim/.config/nvim`を指定し、Gitを管理しない。NeovimのVimTeXはmacOSでSkimを指定し、LinuxではVimTeXの既定設定に任せる。
 
-Nixpkgsは`nixos-unstable`を指定し、具体的なリビジョンを`flake.lock`で固定している。WSL側ではHome Managerの評価、ビルド、適用まで確認済みである。macOS arm64ではHome Managerの`iori@macos`へのswitchが成功し、generation 3が現在の世代、generation 2と1が利用可能である。`nix flake check --no-write-lock-file`とmacOS activation packageのビルドも成功するが、既存の`unknown flake output homeManagerModules`警告が出る。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を有効化する。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決される。`~/.config/nvim`はHome ManagerのリンクでリポジトリのNeovim設定を参照する。ヘッドレス起動で設定読み込みを確認し、設定済みプラグインディレクトリ51個のうち23個が起動時にロードされた。VimTeXの`view_method`は`skim`である。遅延ロードされる個別プラグインの機能は未確認。以前のStowリンクは`~/.config/nvim.stow-backup`に保存されている。
+Nixpkgsは`nixos-unstable`を指定し、具体的なリビジョンを`flake.lock`で固定している。WSL側ではHome Managerの評価、ビルド、適用まで確認済みである。macOS arm64ではHome Managerの`iori@macos`へのswitchが成功し、generation 4が現在の世代、generation 3、2、1が利用可能である。`nix flake check --no-write-lock-file`とmacOS activation packageのビルドも成功するが、既存の`unknown flake output homeManagerModules`警告が出る。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を有効化する。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決される。`~/.config/nvim`はHome ManagerのリンクでリポジトリのNeovim設定を参照する。ヘッドレス起動で設定読み込みを確認し、設定済みプラグインディレクトリ51個のうち23個が起動時にロードされた。VimTeXの`view_method`は`skim`である。遅延ロードされる個別プラグインの機能は未確認。以前のStowリンクは`~/.config/nvim.stow-backup`に保存されている。
 
 macOSの`~/.config/lazygit`は実ディレクトリで、Home Managerは`xdg.configFile."lazygit/config.yml"`だけを、リポジトリの`lazygit/.config/lazygit/config.yml`へのout-of-store symlinkとして管理する。Stow時代のディレクトリリンクは`~/.config/lazygit.stow-backup`に保存されている。`state.yml`と`github_pull_requests.json`はHome Manager管理外で、ライブディレクトリ内の個別リンクが元のリポジトリパスを参照している。ネイティブの`lazygit --print-config-dir`は`~/.config/lazygit`を示す。Nix版lazygit v0.65.1は実際の設定を使った一時リポジトリ上で起動し、日本語UIの表示後に`q`で終了した。設定のパーサーと実行時読み込みは確認済みだが、元のstateファイルには触れていない。
 
@@ -65,14 +65,14 @@ Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gi
 |---|---|---|
 | macOSのNeovim初期起動確認済み・一部未検証 | Neovimの遅延ロードプラグインの個別機能 | ヘッドレス起動で初期設定の読み込みに成功し、設定済みプラグインディレクトリ51個のうち23個が起動時にロードされることを確認済み。遅延ロードされる各プラグインの機能は未確認のため、個別に実機で確認する。プラグイン管理は引き続きlazy.nvimである |
 | WSL適用済み・再確認未実施 | CLI、Git、Neovimの実行時確認とOS固有設定の混入確認 | WSLで`command -v`、基本動作、PATHを確認し、Windows側PATHやmacOS固有パスが意図せず優先されないことを確認する |
-| macOSは世代1・2が利用可能・復帰未検証、WSLは要確認 | 両ホストでのロールバック手順 | 現在世代、適用前のFlakeリビジョン、対象ファイルのリンク先と退避先を記録し、世代の確認・復帰方法を導入方式ごとに確認する。世代1・2が利用可能であることは確認済みだが、実際の復帰は試していない |
+| macOSは世代1〜4が利用可能・復帰未検証、WSLは要確認 | 両ホストでのロールバック手順 | 現在世代、適用前のFlakeリビジョン、対象ファイルのリンク先と退避先を記録し、世代の確認・復帰方法を導入方式ごとに確認する。generation 1〜4が利用可能であることは確認済みだが、実際の復帰は試していない |
 
 ### 次に移行する設定・整理
 
 | 状態 | 対象と次の作業 |
 |---|---|
 | macOS移行済み・WSL未移行 | macOSではlazygitの`config.yml`をHome Managerで配置し、Nix版アプリで設定読み込みと日本語UIを確認済み。zeno、nb、termrainもHome Manager配置済み。zenoのネイティブ動作、nbのノート操作、termrain実設定の構文・ネットワーク機能は未検証。WSL側はmacOSの前提ではなく、配置先とStow所有状態を確認して別途移行する |
-| 未移行 | Zshを共通設定とmacOS/WSL固有設定に分け、両ホストで`zsh -n`と新しい対話シェルを確認する |
+| macOS適用済み・対話シェル未確認、WSL未移行 | Home Manager generation 4が現在の世代。`~/.zshrc`は`modules/home/zsh/macos.zsh`へのHome Managerリンクで、旧Stowリンクは`~/.zshrc.stow-backup`に保持。新エントリポイントは`common-early`、`macos-environment`、`common-late`、`macos-tools`を順に読み込み、宣言的な参照に`mkOutOfStoreSymlink`を使用する。構文検査、112個の実行文の順序比較、Nix check/build、Stow unlink simulationを確認済み。Stowの`~/.zshrc`が残る切替前のHome Manager dry-runは想定どおりblockedとなり、Stowリンクを退避して解放した後のdry-runとswitchは成功した。隔離シェルで`common-early`のみを読み、`XDG_CONFIG_HOME`とdotfiles aliasを確認した。通常・対話シェル起動および`macos.zsh`のsourceは未実施。既存の起動処理は`~/.local/bin/env`とKeychainを読むため、通常起動は未検証で、秘密情報は読み取っていない。WSLの設定は未実装・未検証 |
 | 未移行・要内容確認 | Claude Code、Codex、Hermes、OpenCodeの非認証設定だけを対象にする。対象ファイルと配置先を確認し、認証情報・履歴・ランタイムデータを除外してから設定読み込みを確認する |
 | 未移行・ホスト所有 | WezTermなどのGUI設定は実際にGUIを動かすOSを特定し、そのOS側の配置方法を決めて確認する |
 | 重複あり | HomebrewとNixの共通CLIをFormulaごとに分類し、Nixへ寄せるものとHomebrewに残すものを決めてから重複を整理する |
@@ -94,9 +94,9 @@ nix flake check path:.
 home-manager switch --flake path:.#iori@wsl
 ```
 
-GitとNeovimはHome Managerへ移行済みなので、WSLでは対応するStowパッケージを再適用しない。WSLのlazygit、zeno、nb、termrain設定は未移行である。設定ファイルを追加で移す際も、受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。WSLを最初の試験対象とした後、macOSにもHome Managerを適用済みである。macOSではNeovim、lazygit、zeno、nb、termrainのStowパッケージを再適用しない。
+GitとNeovimはHome Managerへ移行済みなので、WSLでは対応するStowパッケージを再適用しない。WSLのZsh、lazygit、zeno、nb、termrain設定は未移行である。設定ファイルを追加で移す際も、受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。WSLを最初の試験対象とした後、macOSにもHome Managerを適用済みである。macOSではZsh、Neovim、lazygit、zeno、nb、termrainのStowパッケージを再適用しない。
 
-現在の`.zshrc`には、次のようなmacOS固有の記述がある。これをそのまま共通設定としてWSLへ配置してはいけない。
+旧`.zshrc`には、次のようなmacOS固有の記述がある。これをそのまま共通設定としてWSLへ配置してはいけない。macOS用Zshは`modules/home/zsh/`に分割してHome Managerへ適用済みだが、WSL向け設定は未実装である。
 
 - `/opt/homebrew/bin/brew`
 - `/Library/TeX/texbin`
@@ -255,7 +255,7 @@ WSL側の記録では、公式インストーラーによるNix 2.35.2のシン�
 
 ### Phase 2: Flakeの骨格を作る（実装済み・macOS適用済み）
 
-`flake.nix`は共通モジュールと、`x86_64-linux`向けの`homeConfigurations."iori@wsl"`、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を公開する。macOS構成は共通CLI、Neovim設定、lazygit、zeno、nb、termrainの設定配置を対象にし、Git設定・identityは対象外とする。macOS arm64で`nix flake check --no-write-lock-file`とmacOS activation packageのビルドが成功し、既存の`unknown flake output homeManagerModules`警告が出ることを確認した。Home Managerのswitchはgeneration 3として成功し、generation 2と1が利用可能である。Neovim設定はヘッドレス起動で読み込みを確認済みだが、遅延ロードされる個別プラグインの機能は未確認。設定済みプラグインディレクトリは51個、起動時ロードは23個で、VimTeXの`view_method`は`skim`である。移行した各設定のStow時代のリンクは`.stow-backup`として保持している。Git設定はStow所有を継続し、その他のmacOSライブ設定も引き続きStow管理とする。
+`flake.nix`は共通モジュールと、`x86_64-linux`向けの`homeConfigurations."iori@wsl"`、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を公開する。macOS構成は共通CLI、Neovim設定、Zsh、lazygit、zeno、nb、termrainの設定配置を対象にし、Git設定・identityは対象外とする。macOS arm64で`nix flake check --no-write-lock-file`とmacOS activation packageのビルドが成功し、既存の`unknown flake output homeManagerModules`警告が出ることを確認した。Home Managerのswitchはgeneration 4として成功し、generation 3、2、1が利用可能である。Neovim設定はヘッドレス起動で読み込みを確認済みだが、遅延ロードされる個別プラグインの機能は未確認。設定済みプラグインディレクトリは51個、起動時ロードは23個で、VimTeXの`view_method`は`skim`である。移行した各設定のStow時代のリンクは`.stow-backup`として保持している。Git設定はStow所有を継続し、その他のmacOSライブ設定も引き続きStow管理とする。
 
 nix-darwin出力はない。Home ManagerのmacOS出力はcheck・activation package build済みで、ライブ環境への適用も完了している。generation 1は利用可能だが、ロールバック自体は検証していない。これはmacOSユーザー環境の移行であり、システム設定や他のStowパッケージを含む移行全体の完了を意味しない。
 
@@ -310,13 +310,12 @@ HomebrewのFormulaをすべてNixへ機械的に置き換えない。Formulaご�
 
 ### Phase 4: 設定ファイルを1つずつ移行する（一部実装済み）
 
-WSLではGit設定と既存のNeovim設定配置がHome Managerへ移行済みである（WSL側の記録）。macOSでは共通CLI、Neovim設定、lazygitの`config.yml`に加え、zenoの`config.yml`、nbの`.nbrc`、termrainの追跡対象`config.example.toml`と既存のGit管理外`config.toml`へのリンクをHome Managerで管理している。これら以外の設定は未移行であり、引き続き対象ごとに切り替える。
+WSLではGit設定と既存のNeovim設定配置がHome Managerへ移行済みである（WSL側の記録）。macOSでは共通CLI、Neovim設定、Zsh、lazygitの`config.yml`に加え、zenoの`config.yml`、nbの`.nbrc`、termrainの追跡対象`config.example.toml`と既存のGit管理外`config.toml`へのリンクをHome Managerで管理している。これら以外の設定は未移行であり、引き続き対象ごとに切り替える。
 
 macOS側の移行はWSL側の残作業を待たずに進める。未移行の設定は一度に全部切り替えず、次の順番を基本とする。
 
-1. Zsh
-2. Claude Code、Codex、Hermesの非認証設定
-3. GUI設定の実行ホストと所有境界の確認（WezTermなど）
+1. Claude Code、Codex、Hermesの非認証設定
+2. GUI設定の実行ホストと所有境界の確認（WezTermなど）
 
 WSLのlazygit、zeno、nb、termrain設定は、配置先とStow所有状態を確認したうえで行う別個の後続確認とし、macOS側の移行を止める条件にしない。
 
@@ -333,9 +332,11 @@ WSLのlazygit、zeno、nb、termrain設定は、配置先とStow所有状態を�
 
 既存の正規ファイルを、確認なしにNixのリンクで上書きしない。解除は確認と承認の後に切替対象のライブリンクだけに行い、退避物を削除しない。Stowのリンク、通常ファイル、親ディレクトリのリンクを区別して確認する。
 
-### Phase 5: Zshを共通部分とOS固有部分に分ける
+### Phase 5: Zshを共通部分とOS固有部分に分ける（macOS適用済み、WSL未移行）
 
-現在の`.zshrc`はmacOS固有のPATHと共通設定が混在している。次のように分ける。
+macOS用エントリポイントは`common-early`、`macos-environment`、`common-late`、`macos-tools`を順に読み込み、Home Managerの宣言的なsourceには`mkOutOfStoreSymlink`を使う。generation 4へのswitch、Flake check、activation package build、Stow unlink simulationを確認した。Stowの`~/.zshrc`が残る切替前のHome Manager dry-runは想定どおりblockedとなり、Stowリンクを退避して解放した後のdry-runとswitchは成功した。各ファイルとシンボリックリンクのZsh構文、および旧設定と新設定の112個の実行文の順序を確認済み。通常・対話シェル起動と`macos.zsh`のsourceは行っていない。既存の起動処理は`~/.local/bin/env`とKeychainを読むため、通常起動は未検証であり、秘密情報は読み取っていない。
+
+旧Stowソースの`.zshrc`にはmacOS固有のPATHと共通設定が混在していた。macOSの有効なHome Managerエントリポイントは`modules/home/zsh/macos.zsh`で、設定を次のように分割している。WSL向けのZsh設定は未移行である。
 
 ```text
 common:
@@ -464,13 +465,13 @@ darwin-rebuild build --flake .#<mac-host>
 
 ### 既存Stow構成の検証
 
-移行しないパッケージについては、引き続きGNU Stowのsimulationを実行する。macOSではNeovim、lazygit、zeno、nb、termrainがHome Managerの管理下に移ったため、これらの`stow`適用やStow simulationを実行しない。WSL側は未移行のため、同環境でStow適用状態を別途確認する。
+移行しないパッケージについては、引き続きGNU Stowのsimulationを実行する。macOSではZsh、Neovim、lazygit、zeno、nb、termrainがHome Managerの管理下に移ったため、これらの`stow`適用やStow simulationを実行しない。WSL側は未移行のため、同環境でStow適用状態を別途確認する。
 
 ```text
 stow --no-folding --simulate --verbose=1 <package>
 ```
 
-移行したパッケージについては、Stowを再適用しない。macOSではNeovim、lazygit、zeno、nb、termrainが該当する。移行後にStowを実行する必要がある場合は、対象パスの所有者を先に確認する。
+移行したパッケージについては、Stowを再適用しない。macOSではZsh、Neovim、lazygit、zeno、nb、termrainが該当する。移行後にStowを実行する必要がある場合は、対象パスの所有者を先に確認する。
 
 ### 最終確認
 
@@ -498,7 +499,7 @@ Nixの適用前には、次を記録する。
 
 nix-darwinを導入した場合は、適用前の世代へ戻せることを確認する。Home Managerのユーザー設定とnix-darwinのシステム設定は別の世代として扱い、どちらを戻す必要があるかを切り分ける。
 
-現在はHome Manager generation 3が有効で、generation 2と1が利用可能である。Neovim、lazygit、zeno、nb、termrainのStowリンクはそれぞれ`.stow-backup`として保存されている。世代切り替えやStowへの復帰を実施した事実はなく、実際のロールバック手順は未検証である。
+現在はHome Manager generation 4が有効で、generation 3、2、1が利用可能である。Zshを含む移行済み設定のStowリンクは`.stow-backup`として保存されている。世代切り替えやStowへの復帰を実施した事実はなく、実際のロールバック手順は未検証である。
 
 ### Stowへの一時復帰
 
@@ -543,4 +544,4 @@ NixとStowを同時に適用して解決しようとしない。
 7. NixOS-WSLへの移行を将来行うか
 8. macOSのGit設定はStow所有、Home Manager対象外とする。Git identity設定をWSLの`~/.config/git/local`方式とどう整合させるか
 
-未決事項の判断を移行の一律の前提条件にはしない。対象ごとに検証が済むまでは対応するStow構成を残す。WSL UbuntuへのNix導入、共通CLI、Git、Neovimの設定配置と、macOSのHome Manager適用（共通CLI・Neovim・lazygit・zeno・nb・termrain設定）は実施済みである。macOSのNeovimは設定読み込みをヘッドレス起動で確認したが、遅延ロードされる個別プラグインの機能は未確認である。zenoのネイティブ動作、nbのノート操作、termrain実設定の構文・ネットワーク機能は未検証である。WSLの実行時再確認と各設定の移行、ロールバック証跡、HomebrewとNixで重複する共通CLIの整理、その他の設定移行が残っており、移行全体は完了していない。
+未決事項の判断を移行の一律の前提条件にはしない。対象ごとに検証が済むまでは対応するStow構成を残す。WSL UbuntuへのNix導入、共通CLI、Git、Neovimの設定配置と、macOSのHome Manager適用（共通CLI・Neovim・Zsh・lazygit・zeno・nb・termrain設定）は実施済みである。macOSのZshはHome Managerで適用済みだが、WSLのZshは未移行である。通常の対話シェル起動は未検証で、既存起動処理が読む`~/.local/bin/env`とKeychainを含む動作確認は残っている。macOSのNeovimは設定読み込みをヘッドレス起動で確認したが、遅延ロードされる個別プラグインの機能は未確認である。zenoのネイティブ動作、nbのノート操作、termrain実設定の構文・ネットワーク機能は未検証である。ロールバック証跡、HomebrewとNixで重複する共通CLIの整理、その他の設定移行も残っており、移行全体は完了していない。
