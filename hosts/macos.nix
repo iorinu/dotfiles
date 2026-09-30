@@ -13,6 +13,15 @@
   xdg.configFile."lazygit/config.yml".source =
     config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/lazygit/.config/lazygit/config.yml";
 
+  xdg.configFile."zeno/config.yml".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/zeno/.config/zeno/config.yml";
+  home.file.".nbrc".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/nb/.nbrc";
+  xdg.configFile."termrain/config.example.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/termrain/.config/termrain/config.example.toml";
+  xdg.configFile."termrain/config.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/termrain/.config/termrain/config.toml";
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
