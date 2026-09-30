@@ -18,13 +18,13 @@
 
 ## 現在の構成
 
-現在はGNU Stowでパッケージごとのファイルをホームディレクトリへ配置しているが、WSLの共通CLI・Git・NeovimとmacOSの共通CLI・Neovim設定・Zsh・lazygit設定に加え、zeno、nb、termrainの設定配置はHome Managerへ移行済みである。WSLのZsh、lazygit、zeno、nb、termrain設定は未移行である。Homebrewのパッケージ一覧は`homebrew/Brewfile`で管理している。
+現在はGNU Stowでパッケージごとのファイルをホームディレクトリへ配置しているが、WSLの共通CLI・Git・Neovim・Bash・基本的なZsh設定と、macOSの共通CLI・Neovim設定・Zsh・lazygit設定に加え、zeno、nb、termrainの設定配置はHome Managerへ移行済みである。WSLのlazygit、zeno、nb、termrain設定は未移行である。Homebrewのパッケージ一覧は`homebrew/Brewfile`で管理している。
 
 主なパッケージは次のとおり。
 
 | パッケージ | 主な内容 | 移行候補 |
 |---|---|---|
-| `zsh/` | 旧Stow用`.zshrc`ソース | macOSの有効なエントリポイントは`modules/home/zsh/macos.zsh`。WSLのZshは未移行 |
+| `zsh/` | 旧Stow用`.zshrc`ソース | macOSは`modules/home/zsh/macos.zsh`、WSLはHome Managerで`~/go/bin`をPATHに追加する最小設定 |
 | `nvim/` | Neovimとlazy.nvimの設定 | `home.file`または`xdg.configFile`から開始 |
 | `wezterm/` | WezTerm設定 | 実際にGUIを実行するOS側で管理 |
 | `git/` | `.gitconfig` | WSLのみHome Managerで管理。macOSでは対象外 |
@@ -53,6 +53,18 @@ macOSではzenoの`config.yml`、`~/.nbrc`、termrainの`config.example.toml`と
 
 Git設定とGit identityはmacOS Home Managerの対象外で、Stow管理を継続する。Homebrewの共通CLIパッケージは削除しておらず、現在はNixと重複している。
 
+### 2026-09-30 WSLシェル設定の適用
+
+WSL Ubuntu 24.04.4（x86_64）で`nix flake check path:.`、`home-manager build --flake path:.#iori@wsl`、`home-manager switch --flake path:.#iori@wsl`を実行し、成功を確認した。Nix/Home Managerは既に導入済みだったため再インストールしていない。既知の`unknown flake output 'homeManagerModules'`警告は出るが、Flake checkは成功する。
+
+- Bash: `programs.bash`で`~/.bashrc`、alias、補完、Linuxbrew・Cargo・fzf・CUDA・WezTerm OSC 7の初期化を管理する。Ubuntuの`/etc/bash.bashrc`経由の標準設定も維持する。
+- Zsh: `programs.zsh`で`~/.zshrc`を管理し、NixからZshを導入する。`~/go/bin`をPATHへ追加する。既定ログインシェルは引き続きBashであり、変更していない。
+- `~/.profile`はNix installerの初期化を含む既存ファイルのためHome Managerから除外した。Home Manager生成の`.bash_profile`も無効にし、既存`.profile`から`.bashrc`を一度だけ読み込む。
+- 適用前の`.bashrc`、`.bash_aliases`、`.zshrc`を`/home/iori/.local/state/dotfiles-backups/20260930T115523/`へ退避した。`.bash_aliases`のaliasはNix設定へ移した。
+- `bash -n`、`zsh -n`、Bash login-shellのalias/function確認、Zsh login-shellのGo PATH確認を実施した。
+
+Windows側のPATHがWSLへ混在する状態は別途残っており、PATHの優先順位と不要なWindowsエントリは今後確認する。WSLのlazygit、zeno、nb、termrainおよび`~/.profile`自体はHome Manager未管理である。
+
 Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gist向け認証helperの動作を共有している。StowはHomebrewの絶対パスで`gh`を呼び出し、Home ManagerはPATHから`gh`を解決するため、Home Manager設定ではHomebrew固有のパスを避けられる一方、PATH上に`gh`が必要となる。
 
 ## 未完了の作業
@@ -64,7 +76,7 @@ Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gi
 | 状態 | 次の作業 | 確認方法 |
 |---|---|---|
 | macOSのNeovim初期起動確認済み・一部未検証 | Neovimの遅延ロードプラグインの個別機能 | ヘッドレス起動で初期設定の読み込みに成功し、設定済みプラグインディレクトリ51個のうち23個が起動時にロードされることを確認済み。遅延ロードされる各プラグインの機能は未確認のため、個別に実機で確認する。プラグイン管理は引き続きlazy.nvimである |
-| WSL適用済み・再確認未実施 | CLI、Git、Neovimの実行時確認とOS固有設定の混入確認 | WSLで`command -v`、基本動作、PATHを確認し、Windows側PATHやmacOS固有パスが意図せず優先されないことを確認する |
+| WSL CLI・Git・Neovim・Bash・Zsh適用済み | Windows側PATHの整理と未移行アプリ設定 | シェル起動・構文・alias/function・Go PATHは確認済み。WSLで`command -v`と基本動作を追加確認し、Windows側PATHがLinuxコマンドを意図せず優先しないことを確認する |
 | macOSは世代1〜4が利用可能・復帰未検証、WSLは要確認 | 両ホストでのロールバック手順 | 現在世代、適用前のFlakeリビジョン、対象ファイルのリンク先と退避先を記録し、世代の確認・復帰方法を導入方式ごとに確認する。generation 1〜4が利用可能であることは確認済みだが、実際の復帰は試していない |
 
 ### 次に移行する設定・整理
@@ -72,7 +84,7 @@ Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gi
 | 状態 | 対象と次の作業 |
 |---|---|
 | macOS移行済み・WSL未移行 | macOSではlazygitの`config.yml`をHome Managerで配置し、Nix版アプリで設定読み込みと日本語UIを確認済み。zeno、nb、termrainもHome Manager配置済み。zenoのネイティブ動作、nbのノート操作、termrain実設定の構文・ネットワーク機能は未検証。WSL側はmacOSの前提ではなく、配置先とStow所有状態を確認して別途移行する |
-| macOS適用済み・対話シェル未確認、WSL未移行 | Home Manager generation 4が現在の世代。`~/.zshrc`は`modules/home/zsh/macos.zsh`へのHome Managerリンクで、旧Stowリンクは`~/.zshrc.stow-backup`に保持。新エントリポイントは`common-early`、`macos-environment`、`common-late`、`macos-tools`を順に読み込み、宣言的な参照に`mkOutOfStoreSymlink`を使用する。構文検査、112個の実行文の順序比較、Nix check/build、Stow unlink simulationを確認済み。Stowの`~/.zshrc`が残る切替前のHome Manager dry-runは想定どおりblockedとなり、Stowリンクを退避して解放した後のdry-runとswitchは成功した。隔離シェルで`common-early`のみを読み、`XDG_CONFIG_HOME`とdotfiles aliasを確認した。通常・対話シェル起動および`macos.zsh`のsourceは未実施。既存の起動処理は`~/.local/bin/env`とKeychainを読むため、通常起動は未検証で、秘密情報は読み取っていない。WSLの設定は未実装・未検証 |
+| macOS適用済み・対話シェル未確認、WSL基本Zsh設定適用済み | Home Manager generation 4が現在の世代。`~/.zshrc`はmacOSで`modules/home/zsh/macos.zsh`へのHome Managerリンク。WSLはNix Home Managerが最小の`.zshrc`を生成し、`~/go/bin`をPATHへ追加する。macOS側は新エントリポイントの構文・112個の実行文順序・Nix check/build・Stow unlink simulationを確認済みだが、通常起動とKeychainを含む設定sourceは未確認。WSL側は`zsh -n`とlogin-shellでGo PATHを確認済み |
 | 未移行・要内容確認 | Claude Code、Codex、Hermes、OpenCodeの非認証設定だけを対象にする。対象ファイルと配置先を確認し、認証情報・履歴・ランタイムデータを除外してから設定読み込みを確認する |
 | 未移行・ホスト所有 | WezTermなどのGUI設定は実際にGUIを動かすOSを特定し、そのOS側の配置方法を決めて確認する |
 | 重複あり | HomebrewとNixの共通CLIをFormulaごとに分類し、Nixへ寄せるものとHomebrewに残すものを決めてから重複を整理する |
@@ -94,9 +106,9 @@ nix flake check path:.
 home-manager switch --flake path:.#iori@wsl
 ```
 
-GitとNeovimはHome Managerへ移行済みなので、WSLでは対応するStowパッケージを再適用しない。WSLのZsh、lazygit、zeno、nb、termrain設定は未移行である。設定ファイルを追加で移す際も、受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。WSLを最初の試験対象とした後、macOSにもHome Managerを適用済みである。macOSではZsh、Neovim、lazygit、zeno、nb、termrainのStowパッケージを再適用しない。
+Git、Neovim、Bash、ZshはHome Managerへ移行済みなので、WSLでは対応するStowパッケージを再適用しない。WSLのlazygit、zeno、nb、termrain設定は未移行である。設定ファイルを追加で移す際も、受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。WSLを最初の試験対象とした後、macOSにもHome Managerを適用済みである。macOSではZsh、Neovim、lazygit、zeno、nb、termrainのStowパッケージを再適用しない。
 
-旧`.zshrc`には、次のようなmacOS固有の記述がある。これをそのまま共通設定としてWSLへ配置してはいけない。macOS用Zshは`modules/home/zsh/`に分割してHome Managerへ適用済みだが、WSL向け設定は未実装である。
+旧`.zshrc`には、次のようなmacOS固有の記述がある。これをそのまま共通設定としてWSLへ配置してはいけない。macOS用Zshは`modules/home/zsh/`に分割してHome Managerへ適用済み。WSL用にはmacOS設定を流用せず、`~/go/bin`を追加する最小設定をHome Managerで管理している。
 
 - `/opt/homebrew/bin/brew`
 - `/Library/TeX/texbin`
@@ -310,7 +322,7 @@ HomebrewのFormulaをすべてNixへ機械的に置き換えない。Formulaご�
 
 ### Phase 4: 設定ファイルを1つずつ移行する（一部実装済み）
 
-WSLではGit設定と既存のNeovim設定配置がHome Managerへ移行済みである（WSL側の記録）。macOSでは共通CLI、Neovim設定、Zsh、lazygitの`config.yml`に加え、zenoの`config.yml`、nbの`.nbrc`、termrainの追跡対象`config.example.toml`と既存のGit管理外`config.toml`へのリンクをHome Managerで管理している。これら以外の設定は未移行であり、引き続き対象ごとに切り替える。
+WSLではGit、Neovimに加えBashと基本的なZsh設定もHome Managerへ移行済みである。macOSでは共通CLI、Neovim設定、Zsh、lazygitの`config.yml`に加え、zenoの`config.yml`、nbの`.nbrc`、termrainの追跡対象`config.example.toml`と既存のGit管理外`config.toml`へのリンクをHome Managerで管理している。これら以外の設定は未移行であり、引き続き対象ごとに切り替える。
 
 macOS側の移行はWSL側の残作業を待たずに進める。未移行の設定は一度に全部切り替えず、次の順番を基本とする。
 
@@ -332,11 +344,11 @@ WSLのlazygit、zeno、nb、termrain設定は、配置先とStow所有状態を�
 
 既存の正規ファイルを、確認なしにNixのリンクで上書きしない。解除は確認と承認の後に切替対象のライブリンクだけに行い、退避物を削除しない。Stowのリンク、通常ファイル、親ディレクトリのリンクを区別して確認する。
 
-### Phase 5: Zshを共通部分とOS固有部分に分ける（macOS適用済み、WSL未移行）
+### Phase 5: Zshを共通部分とOS固有部分に分ける（macOS適用済み、WSL基本設定適用済み）
 
 macOS用エントリポイントは`common-early`、`macos-environment`、`common-late`、`macos-tools`を順に読み込み、Home Managerの宣言的なsourceには`mkOutOfStoreSymlink`を使う。generation 4へのswitch、Flake check、activation package build、Stow unlink simulationを確認した。Stowの`~/.zshrc`が残る切替前のHome Manager dry-runは想定どおりblockedとなり、Stowリンクを退避して解放した後のdry-runとswitchは成功した。各ファイルとシンボリックリンクのZsh構文、および旧設定と新設定の112個の実行文の順序を確認済み。通常・対話シェル起動と`macos.zsh`のsourceは行っていない。既存の起動処理は`~/.local/bin/env`とKeychainを読むため、通常起動は未検証であり、秘密情報は読み取っていない。
 
-旧Stowソースの`.zshrc`にはmacOS固有のPATHと共通設定が混在していた。macOSの有効なHome Managerエントリポイントは`modules/home/zsh/macos.zsh`で、設定を次のように分割している。WSL向けのZsh設定は未移行である。
+旧Stowソースの`.zshrc`にはmacOS固有のPATHと共通設定が混在していた。macOSの有効なHome Managerエントリポイントは`modules/home/zsh/macos.zsh`で、設定を次のように分割している。WSLでは現時点でGoのPATHのみを設定し、共通設定への切り出しは今後進める。
 
 ```text
 common:
