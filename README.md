@@ -9,11 +9,12 @@ Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、�
 | ディレクトリ | 内容 |
 |---|---|
 | `zsh/` | 旧Stow用の`.zshrc`ソース（macOSの有効なエントリポイントは`modules/home/zsh/macos.zsh`。WSLのZshは未移行） |
-| `nvim/` | Neovim 設定 — lazy.nvim ベース。LSP、Telescope、Copilot、Git 連携など |
+| `.config/` | 追跡対象の共通設定ソース（Neovim、lazygit・zenoの`config.yml`、termrainの`config.example.toml`） |
+| `.nbrc` | nb (ノートブック CLI) の設定ソース |
+| `docs/nvim-plugins.md` | Neovimのプラグイン一覧 |
+| `nvim/` | 従来パスに保持するGit管理外のローカル画像 |
 | `wezterm/` | WezTerm ターミナル設定 — 透過・グラデーション背景、カスタムキーバインド |
 | `git/` | `.gitconfig` — ghq root、GitHub credential 設定 |
-| `zeno/` | zeno.zsh のスニペット・補完設定 |
-| `nb/` | nb (ノートブック CLI) の設定 |
 | `claude/` | Claude Code の設定 |
 | `.claude/` | Claude Code の skills |
 | `codex/` | Codex の設定・LaunchAgent |
@@ -21,9 +22,13 @@ Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、�
 | `herdr/` | herdr の設定 |
 | `hermes/` | Hermes の共通 SOUL・指示書、docs、skills |
 | `opencode/` | OpenCode の設定 |
-| `lazygit/` | lazygit の設定 (`gui.language: ja` で UI 日本語化) |
+| `lazygit/` | 従来パスに保持するランタイムファイルと`.gitignore` |
 | `homebrew/` | Brewfile — Homebrew でインストールしたパッケージ一覧 |
-| `termrain/` | termrain (ターミナル天気/レーダー CLI) の設定 |
+| `termrain/` | 従来パスに保持するGit管理外`config.toml` |
+
+追跡対象の共通設定ソースを新配置へ集約し、対応する旧追跡ソース48ファイルを削除しました。HermesがmacOSでgeneration 5への適用と新ソースへのライブリンクを確認済みです。設定内容・プラグイン名は変更していません。引き続きStowで管理するパッケージは変更していません。
+
+ランタイムファイルとGit管理外のローカルファイルは従来パスに残しています。画像も移動せず、`.config/nvim/amadeus_frames`から`../../nvim/.config/nvim/amadeus_frames`へのローカルリンクで参照します。このリンクはGit・Home Managerの管理外です。WSLではNixのNeovimソース参照のみ更新し、今回の配置変更の適用は未検証です。
 
 ## セットアップ
 
@@ -37,11 +42,15 @@ nix flake check path:.
 home-manager switch --flake path:.#iori@wsl
 ```
 
+この配置変更をpullした後は、上記の手順でHome Managerを再適用してNeovimのリンク先を更新してください。ローカル画像は管理対象外のため、そのホストでも必要に応じて旧画像パスへのリンクを用意してください。今回の変更についてWSL上での適用・動作確認は行っていません。
+
 WSLのHome Manager設定ではGitのユーザー名とメールアドレスを設定せず、`~/.config/git/local`を読み込みます。Bash設定ではUbuntuのシステム設定とLinuxbrew・Cargo・fzf・CUDA・WezTerm連携を維持し、存在確認をしてから読み込みます。既存の`~/.bashrc`、`~/.zshrc`、`~/.bash_aliases`は適用前にバックアップし、Bash/Zshの設定ファイルはHome Manager所有へ切り替えます。GitとNeovimもHome Manager管理のため、WSLでは対応するStowパッケージを適用しないでください。
 
 ### macOS
 
-Home Manager構成`iori@macos`は適用済みで、`home-manager generations`ではgeneration 4が現在の世代、generation 3、2、1が利用可能です。macOS arm64上で`nix flake check --no-write-lock-file`とmacOS activation packageのビルドが成功しています。既存の`unknown flake output homeManagerModules`警告は出ます。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を管理します。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決されます。`~/.config/nvim`はHome ManagerのリンクでリポジトリのNeovim設定を参照し、ヘッドレス起動で設定読み込みを確認済みです（設定済みプラグインディレクトリ51個、起動時ロード23個。遅延ロードされる個別プラグインの動作は未確認）。VimTeXの`view_method`は`skim`です。NeovimのStowリンクは`~/.config/nvim.stow-backup`に保存されています。`~/.config/lazygit`は実ディレクトリで、Home Manager管理の`config.yml`リンクがリポジトリの設定を参照します。以前のStowディレクトリリンクは`~/.config/lazygit.stow-backup`に保存されています。`state.yml`と`github_pull_requests.json`はHome Managerの管理対象ではなく、ライブディレクトリ内の個別リンクから元のリポジトリパスを参照します。Nix版lazygit v0.65.1で実設定を使った一時リポジトリの起動を確認し、日本語UIが表示され、`q`で終了しました。元の状態ファイルを使わずに設定の読み込みを確認しています。Home Managerはzenoの`config.yml`、`.nbrc`、termrainのサンプル設定と既存のローカル`config.toml`へのリンクも管理します。4つのリンクはいずれも元のリポジトリ内ソースを参照し、以前のStowリンクは`~/.config/zeno.stow-backup`、`~/.nbrc.stow-backup`、`~/.config/termrain.stow-backup`に保存されています。termrainの実設定はGit管理外のローカルファイルで、内容を確認せずNix storeにも取り込んでいません。隔離した環境で`.nbrc`の読み込みを`EDITOR=nvim`および`NB_DIR`設定下で確認しましたが、nbのノート操作は未確認です。zenoのネイティブ動作、termrain実設定の構文やネットワーク機能も未検証です。Git設定・Git identityはHome Managerの対象外で、その他のmacOS設定はStow管理です。Homebrewの共通CLIパッケージは未削除のため、当面Nixと重複しています。
+Home Manager構成`iori@macos`は適用済みで、generation 5が現在の世代、generation 4、3、2、1が利用可能です。macOS arm64上で`nix flake check --no-write-lock-file`とmacOS activation packageのビルドが成功しています。既存の`unknown flake output homeManagerModules`警告は出ます。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を管理します。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決されます。`~/.config/nvim`はHome Managerのリンクでリポジトリの`.config/nvim`を参照し、切替後もヘッドレス起動に成功しました（従来と同じ51個のプラグイン名、45個の画像フレームへのアクセスを確認。以前の初期起動では23個をロード。遅延ロードされる個別プラグインの動作は未確認）。VimTeXの`view_method`は`skim`です。NeovimのStowリンクは`~/.config/nvim.stow-backup`に保存されています。`~/.config/lazygit`は実ディレクトリで、Home Manager管理の`config.yml`リンクがリポジトリの`.config/lazygit/config.yml`を参照します。以前のStowディレクトリリンクは`~/.config/lazygit.stow-backup`に保存されています。`state.yml`と`github_pull_requests.json`はHome Managerの管理対象ではなく、ライブディレクトリ内の個別リンクから元のリポジトリパスを参照します。Nix版lazygit v0.65.1で実設定を使った一時リポジトリの起動を確認し、日本語UIが表示され、`q`で終了しました。元の状態ファイルを使わずに設定の読み込みを確認しています。Home Managerはzenoの`config.yml`、`.nbrc`、termrainのサンプル設定と既存のローカル`config.toml`へのリンクも管理します。追跡対象の3つは新配置のソース、termrainの実設定は従来の`termrain/.config/termrain/config.toml`を参照し、以前のStowリンクは`~/.config/zeno.stow-backup`、`~/.nbrc.stow-backup`、`~/.config/termrain.stow-backup`に保存されています。termrainの実設定はGit管理外のローカルファイルで、内容を確認せずNix storeにも取り込んでいません。隔離した環境で`.nbrc`の読み込みを`EDITOR=nvim`および`NB_DIR`設定下で確認しましたが、nbのノート操作は未確認です。zenoのネイティブ動作、termrain実設定の構文やネットワーク機能も未検証です。Git設定・Git identityはHome Managerの対象外で、その他のmacOS設定はStow管理です。Homebrewの共通CLIパッケージは未削除のため、当面Nixと重複しています。
+
+旧世代や保存済みStowリンクへ戻す前には、変更前のGitリビジョンまたは保持したローカルバックアップから旧ソース配置を復元してください。旧リンクは削除済みのソースを参照するため、世代切替やリンク復帰だけでは戻せません。詳しくは[ロールバック](docs/nix-migration.md#ロールバック)を参照してください。
 
 ```bash
 # 1. Homebrew のインストール (未導入の場合)

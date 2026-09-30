@@ -12,7 +12,7 @@
     stateVersion = "24.05";
   };
 
-  dotfiles.nvimConfigPath = "/home/iori/clone/dotfiles/nvim/.config/nvim";
+  dotfiles.nvimConfigPath = "/home/iori/clone/dotfiles/.config/nvim";
 
   programs.home-manager.enable = true;
 }

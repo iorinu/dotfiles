@@ -11,17 +11,17 @@
   home.file.".zshrc".source =
     config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/modules/home/zsh/macos.zsh";
 
-  dotfiles.nvimConfigPath = "/Users/iori/.dotfiles/nvim/.config/nvim";
+  dotfiles.nvimConfigPath = "/Users/iori/.dotfiles/.config/nvim";
 
   xdg.configFile."lazygit/config.yml".source =
-    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/lazygit/.config/lazygit/config.yml";
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/lazygit/config.yml";
 
   xdg.configFile."zeno/config.yml".source =
-    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/zeno/.config/zeno/config.yml";
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/zeno/config.yml";
   home.file.".nbrc".source =
-    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/nb/.nbrc";
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.nbrc";
   xdg.configFile."termrain/config.example.toml".source =
-    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/termrain/.config/termrain/config.example.toml";
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/termrain/config.example.toml";
   xdg.configFile."termrain/config.toml".source =
     config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/termrain/.config/termrain/config.toml";
 

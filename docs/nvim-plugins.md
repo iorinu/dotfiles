@@ -2,7 +2,7 @@
 
 このファイルは、現在の Neovim 設定で使用しているプラグインと、その役割をまとめたものです。
 
-プラグインの定義は `nvim/.config/nvim/lua/plugins/` 以下にカテゴリ別で配置されています。`lua/config/lazy.lua` の `import` によって読み込まれ、バージョンは `nvim/.config/nvim/lazy-lock.json` で固定されています。
+プラグインの定義は `.config/nvim/lua/plugins/` 以下にカテゴリ別で配置されています。`.config/nvim/lua/config/lazy.lua` の `import` によって読み込まれ、バージョンは `.config/nvim/lazy-lock.json` で固定されています。
 
 ## 読み込みと状態
 
@@ -166,6 +166,6 @@ Jupytext の変換には `jupytext` CLI も必要です。
 
 ## 補足
 
-- `nvim/.config/nvim/legacy/gitgragh` は、`gitgraph.lua` と同じ GitGraph 定義を持つ旧ファイルです。プラグイン読み込み対象の `lua/plugins/` 外へ移してあり、この一覧では `isakbm/gitgraph.nvim` を1回だけ記載しています。
+- `.config/nvim/legacy/gitgragh` は、`gitgraph.lua` と同じ GitGraph 定義を持つ旧ファイルです。プラグイン読み込み対象の `lua/plugins/` 外へ移してあり、この一覧では `isakbm/gitgraph.nvim` を1回だけ記載しています。
 - `lazy-lock.json` のエントリは、プラグイン本体だけでなく依存プラグインも含みます。
 - プラグインのロード条件やキー設定を変更した場合は、このファイルの該当箇所も更新します。
