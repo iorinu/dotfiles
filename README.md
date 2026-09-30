@@ -9,19 +9,19 @@ Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、�
 | ディレクトリ | 内容 |
 |---|---|
 | `zsh/` | 旧Stow用の`.zshrc`ソース（macOSの有効なエントリポイントは`modules/home/zsh/macos.zsh`。WSLのZshは未移行） |
-| `.config/` | 追跡対象の共通設定ソース（Neovim、lazygit・zenoの`config.yml`、termrainの`config.example.toml`） |
+| `.config/` | 共通設定ソース（Neovim、lazygit、zeno、termrain）とPhase AでコピーしたAI非認証設定（claude、codex、hermes、opencode） |
 | `.nbrc` | nb (ノートブック CLI) の設定ソース |
 | `docs/nvim-plugins.md` | Neovimのプラグイン一覧 |
 | `nvim/` | 従来パスに保持するGit管理外のローカル画像 |
 | `wezterm/` | WezTerm ターミナル設定 — 透過・グラデーション背景、カスタムキーバインド |
 | `git/` | `.gitconfig` — ghq root、GitHub credential 設定 |
-| `claude/` | Claude Code の設定 |
-| `.claude/` | Claude Code の skills |
-| `codex/` | Codex の設定・LaunchAgent |
+| `claude/` | 切り替え前のClaude Code設定ソース（保持中） |
+| `.claude/` | プロジェクト用Claude Code skills（今回の移行対象外） |
+| `codex/` | 切り替え前のCodex設定・LaunchAgentソース（保持中） |
 | `ghostty/` | Ghostty の設定 |
 | `herdr/` | herdr の設定 |
-| `hermes/` | Hermes の共通 SOUL・指示書、docs、skills |
-| `opencode/` | OpenCode の設定 |
+| `hermes/` | 切り替え前のHermesソースとGit管理外のローカル`config.yaml`（保持中） |
+| `opencode/` | 切り替え前のOpenCode設定ソース（保持中） |
 | `lazygit/` | 従来パスに保持するランタイムファイルと`.gitignore` |
 | `homebrew/` | Brewfile — Homebrew でインストールしたパッケージ一覧 |
 | `termrain/` | 従来パスに保持するGit管理外`config.toml` |
@@ -29,6 +29,10 @@ Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、�
 追跡対象の共通設定ソースを新配置へ集約し、対応する旧追跡ソース48ファイルを削除しました。HermesがmacOSでgeneration 5への適用と新ソースへのライブリンクを確認済みです。設定内容・プラグイン名は変更していません。引き続きStowで管理するパッケージは変更していません。
 
 ランタイムファイルとGit管理外のローカルファイルは従来パスに残しています。画像も移動せず、`.config/nvim/amadeus_frames`から`../../nvim/.config/nvim/amadeus_frames`へのローカルリンクで参照します。このリンクはGit・Home Managerの管理外です。WSLではNixのNeovimソース参照のみ更新し、今回の配置変更の適用は未検証です。
+
+AI設定の所有権切り替えは一時停止中です。追跡済みの旧ソース14ファイルとStowのライブリンクはそのまま残り、Home Manager generation 5が現在も有効です。準備コピー14ファイルは`.config/{claude,codex,hermes,opencode}/`にあり、`hosts/macos.nix`には14個の配置先へのパスのみのHome Manager宣言があります。これに加えて、既存の未追跡ローカルHermes YAMLへのリンク宣言があります。コピーは修正済みSOULの参照先を除き、現在の旧ソースと一致します（Codexのローカル変更はコミット対象に含めません）。SOULの参照先修正後、モデル設定も行いました。Hermesの既定モデルは`openai-codex`の`gpt-6.1-sol`、委譲モデルは同providerの`gpt-6-luna`です。これらはGit管理外の`hermes/.hermes/config.yaml`にアプリ設定として保存され、Nixでは生成・宣言していません。OpenCodeの既定モデル`openai/gpt-6-luna`は有効なソースと準備コピーの両方に設定されています（CLIの`--model`指定が優先されます）。プロジェクトの`.claude/skills`は対象外です。Hermes YAMLはNix storeに取り込まれません。
+
+AIの切り替えはHermesの検証とユーザー承認後に行います。それまではmacOSのHome Managerを再適用しません。切り替え後はAIの対象パスにStowを再適用しないでください。WSLのAI設定は未移行です。将来旧追跡ソースを削除する際は、WSLや他のStow利用者が、稼働中のStow構成を更新する前に移行するか従来のソースを復元する必要があります。AIの切り戻しには元ソースとライブリンクと同じ親ディレクトリに退避したリンクが必要で、AIリンクを管理していなかった旧Home Manager世代だけでは復元できません。
 
 ## セットアップ
 
@@ -63,7 +67,6 @@ brew bundle --file=~/.dotfiles/homebrew/Brewfile
 cd ~/.dotfiles
 stow wezterm
 stow git
-stow claude
 stow ghostty
 ```
 

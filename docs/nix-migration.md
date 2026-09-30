@@ -36,15 +36,15 @@ Hermesが設定のバイト一致、Lua 40ファイル・YAML・サンプルTOML
 | `git/` | `.gitconfig` | WSLのみHome Managerで管理。macOSでは対象外 |
 | `.config/zeno/config.yml` | zeno.zsh設定 | `xdg.configFile` |
 | `.nbrc` | nb設定 | `home.file` |
-| `claude/` | Claude Code設定 | 非認証設定だけを`home.file` |
-| `.claude/` | Claude Codeのskills | 内容と配置先を確認して移行対象を判断 |
+| `.config/claude/` | Claude Code非認証設定（旧`claude/`も保持） | macOSの`home.file`宣言のみ準備 |
+| `.claude/` | プロジェクト用Claude Code skills | 今回の移行対象外 |
 | `ghostty/` | Ghostty設定 | 実際にGUIを実行するOS側で管理 |
 | `herdr/` | herdr設定 | 内容と利用環境を確認して判断 |
-| `opencode/` | OpenCode設定 | 非認証設定を確認して移行対象を判断 |
+| `.config/opencode/` | OpenCode設定（旧`opencode/`も保持） | macOSの`xdg.configFile`宣言のみ準備 |
 | `.config/lazygit/config.yml` | lazygit設定（`lazygit/`にランタイムと`.gitignore`を保持） | `xdg.configFile` |
 | `.config/termrain/config.example.toml` | termrainサンプル（`termrain/`にローカル実設定を保持） | `xdg.configFile` |
-| `codex/` | Codex設定とLaunchAgent | 設定はHome Manager、LaunchAgentはmacOS専用 |
-| `hermes/` | 追跡対象の共通SOUL・指示書、docs、skills | Home Managerで配置 |
+| `.config/codex/` | Codex設定と`launchd/`のplist（旧`codex/`も保持） | macOSの`home.file`宣言のみ準備 |
+| `.config/hermes/` | 共通SOUL、docs、skills（旧`hermes/`も保持） | macOSの`home.file`宣言のみ準備。ローカルYAMLは従来パス |
 | `homebrew/` | Formula、Cask、Cargo、uv、npmなど | 共通CLIはNix、GUIとNixに載せにくいものはHomebrew |
 
 ## 現在の実装状況
@@ -58,6 +58,16 @@ macOSの`~/.config/lazygit`は実ディレクトリで、Home Managerは`xdg.con
 macOSではzenoの`config.yml`、`~/.nbrc`、termrainの`config.example.toml`と`config.toml`もHome Managerが個別のout-of-store symlinkとして配置する。zeno、termrainの設定ディレクトリは実ディレクトリ、`.nbrc`はHome Manager管理のリンクであり、追跡対象の3つは新配置のソース、termrainの実設定は従来の`termrain/.config/termrain/config.toml`を参照する。以前のStowリンクは`~/.config/zeno.stow-backup`、`~/.nbrc.stow-backup`、`~/.config/termrain.stow-backup`に保持している。termrainの実設定はGit管理外のローカルファイルで、内容を確認せずNix storeにも取り込んでいない（リンク先パスのみを指定）。nbのノートやデータには触れていない。追跡対象のzeno YAMLとtermrainサンプルTOMLの構文、および`.nbrc`のzsh構文は確認済み。隔離した環境で`.nbrc`の読み込みを`EDITOR=nvim`および`NB_DIR`設定下で確認したが、nbのノート操作は未確認である。zenoのネイティブ動作、termrain実設定の構文やネットワーク・天気機能も未検証である。
 
 Git設定とGit identityはmacOS Home Managerの対象外で、Stow管理を継続する。Homebrewの共通CLIパッケージは削除しておらず、現在はNixと重複している。
+
+### AI設定のPhase A（準備のみ・未適用）
+
+追跡済みの旧ソース14ファイルは残したまま、準備コピー14ファイルを`.config/claude/`、`.config/codex/`、`.config/hermes/`、`.config/opencode/`へ配置した。Codexのplistは`.config/codex/launchd/`に置いた。コピーは修正済みSOULのCodex指示書参照を除き、現在の旧ソースと一致する。Codexの作業ファイルは旧・新の両方に既存のローカル変更を保持している。新パスは旧パスのHEADをベースとしてステージし、ローカル変更はコミットに含めない。コピー先のHermes `SOUL.md`では参照を`~/.dotfiles/.config/codex/AGENTS.md`へ修正した。元のSOULと旧ソースの配置は保持し、ソースは削除していない。
+
+`hosts/macos.nix`には14個の配置先へのパスのみの`mkOutOfStoreSymlink`宣言がある。アプリの参照先は`~/.claude`、`~/.codex`、`~/.hermes`、`~/.config/opencode`、`~/Library/LaunchAgents`のままで、ディレクトリ全体は管理しない。HermesのGit管理外`hermes/.hermes/config.yaml`は従来パスに保持し、`~/.hermes/config.yaml`には絶対パスだけの`home.file`リンクを宣言した。このYAMLはローカルでHermesのネイティブ設定CLIから更新したもので、Nix storeには取り込まず、値もNixで宣言・生成しない。Hermesの既定モデルは`model.default=gpt-6.1-sol`、`model.provider=openai-codex`、委譲モデルは`delegation.model=gpt-6-luna`、`delegation.provider=openai-codex`。OpenCodeは`openai/gpt-6-luna`を既定モデルとして有効なソースと準備コピーの両方に設定しており、CLIの`--model`指定が優先される。plistは`home.file`リンクのみで、サービス定義・スクリプト・ランタイム保存先は変更しない。認証情報、履歴、ログ、ランタイムデータ、他のプロファイルとプロジェクトの`.claude/skills`は対象外である。
+
+AI所有権の切り替えは一時停止中である。現在もgeneration 5が有効で、AIのライブリンクはStowのまま、旧ソース14ファイルも保持している。切り替え、削除、再起動、macOSの`home-manager switch`は行っていない。再開時は、元ソースとライブリンクの隣に退避するリンクを確保し、承認済みの末端リンクだけを明示的に解除する。事前確認の`stow --no-folding --simulate --verbose=2 --delete claude codex hermes opencode`は、ignore指定があっても無関係な`.nbrc.stow-backup`のUNLINKを計画するため、実際のStow削除は実行しない。切り替え後はAIの対象パスをStowで再適用しない。
+
+WSLのAI設定は未移行であり、WSLのhosts/modulesには今回の宣言を追加していない。将来旧追跡ソースを削除する前に、WSLや他のStow利用者の移行・復元手順を確認する。それらの利用者は稼働中のStow構成を更新する前に新配置へ移行するか、従来のソースを復元する必要がある。
 
 ### 2026-09-30 WSLシェル設定の適用
 
@@ -91,7 +101,7 @@ Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gi
 |---|---|
 | macOS移行済み・WSL未移行 | macOSではlazygitの`config.yml`をHome Managerで配置し、Nix版アプリで設定読み込みと日本語UIを確認済み。zeno、nb、termrainもHome Manager配置済み。zenoのネイティブ動作、nbのノート操作、termrain実設定の構文・ネットワーク機能は未検証。WSL側はmacOSの前提ではなく、配置先とStow所有状態を確認して別途移行する |
 | macOS適用済み・対話シェル未確認、WSL基本Zsh設定適用済み | Home Manager generation 5が現在の世代。`~/.zshrc`はmacOSで`modules/home/zsh/macos.zsh`へのHome Managerリンク。WSLはNix Home Managerが最小の`.zshrc`を生成し、`~/go/bin`をPATHへ追加する。macOS側は新エントリポイントの構文・112個の実行文順序・Nix check/build・Stow unlink simulationを確認済みだが、通常起動とKeychainを含む設定sourceは未確認。WSL側は`zsh -n`とlogin-shellでGo PATHを確認済み |
-| 未移行・要内容確認 | Claude Code、Codex、Hermes、OpenCodeの非認証設定だけを対象にする。対象ファイルと配置先を確認し、認証情報・履歴・ランタイムデータを除外してから設定読み込みを確認する |
+| macOS Phase A準備済み・切り替え未実施、WSL未移行 | Claude Code、Codex、Hermes、OpenCodeの14ファイルを新配置へコピーし、macOSの個別リンク宣言を準備した。Hermesの検証とユーザー承認後に対象リンクだけを解放・適用・確認する。旧ソースはそれまで保持する |
 | 未移行・ホスト所有 | WezTermなどのGUI設定は実際にGUIを動かすOSを特定し、そのOS側の配置方法を決めて確認する |
 | 重複あり | HomebrewとNixの共通CLIをFormulaごとに分類し、Nixへ寄せるものとHomebrewに残すものを決めてから重複を整理する |
 
@@ -520,6 +530,8 @@ Nixの適用前には、次を記録する。
 nix-darwinを導入した場合は、適用前の世代へ戻せることを確認する。Home Managerのユーザー設定とnix-darwinのシステム設定は別の世代として扱い、どちらを戻す必要があるかを切り分ける。
 
 現在はHome Manager generation 5が有効で、generation 4、3、2、1が利用可能である。Zshを含む移行済み設定のStowリンクは`.stow-backup`として保存されている。旧世代へのロールバックやStowへの復帰は実施しておらず、実際の復帰手順は未検証である。
+
+AI所有権の切り替えは未実施で、旧ソースとStowのライブリンクを保持している。後続の切り替えから戻すには、元ソースとライブリンクと同じ親ディレクトリに退避した旧リンクの両方を保持する必要がある。generation 1〜5はAIリンクを管理していなかったため、旧世代へ戻すだけではAIリンクは復元できない。AIのHome Manager所有を解除したうえで、保持した元ソースと旧リンクを復元する。
 
 配置整理前のHome Manager世代と保存済みStowリンクは、削除済みの旧ソースパスを参照する。世代やリンクを戻す前に、変更前のGitリビジョンまたは保持したローカルバックアップから対象の旧ソース配置を復元する必要がある。out-of-store symlinkのため、世代切替だけでは旧ソースは復元されない。この注意点は、配置整理前のWSL世代へ戻す場合にも当てはまる。画像・ランタイムファイル・ローカル実設定は復元作業でも上書きしない。
 

@@ -25,6 +25,42 @@
   xdg.configFile."termrain/config.toml".source =
     config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/termrain/.config/termrain/config.toml";
 
+  # AI設定のPhase A: 宣言のみ準備し、ライブリンクの切り替えは承認後に行う。
+  home.file.".claude/CLAUDE.md".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/claude/CLAUDE.md";
+  home.file.".claude/runcat-statusline.py".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/claude/runcat-statusline.py";
+  home.file.".claude/settings.json".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/claude/settings.json";
+
+  home.file.".codex/AGENTS.md".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/codex/AGENTS.md";
+  home.file.".codex/config.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/codex/config.toml";
+  home.file.".codex/runcat-usage.py".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/codex/runcat-usage.py";
+  home.file."Library/LaunchAgents/com.iori.codex-runcat-usage.plist".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/codex/launchd/com.iori.codex-runcat-usage.plist";
+
+  home.file.".hermes/SOUL.md".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/hermes/SOUL.md";
+  home.file.".hermes/docs/loop-engineering-guide.md".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/hermes/docs/loop-engineering-guide.md";
+  home.file.".hermes/skills/software-development/behavior-preserving-refactoring/SKILL.md".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/hermes/skills/software-development/behavior-preserving-refactoring/SKILL.md";
+  home.file.".hermes/skills/software-development/loop-engineering/SKILL.md".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/hermes/skills/software-development/loop-engineering/SKILL.md";
+  home.file.".hermes/skills/software-development/requirements-to-docs/SKILL.md".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/hermes/skills/software-development/requirements-to-docs/SKILL.md";
+  home.file.".hermes/skills/software-development/spec-driven-delivery/SKILL.md".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/hermes/skills/software-development/spec-driven-delivery/SKILL.md";
+  # ローカルYAMLは従来パスを維持し、内容をNix storeへ取り込まない。
+  home.file.".hermes/config.yaml".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/hermes/.hermes/config.yaml";
+
+  xdg.configFile."opencode/opencode.jsonc".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/opencode/opencode.jsonc";
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
