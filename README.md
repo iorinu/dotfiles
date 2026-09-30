@@ -29,7 +29,7 @@ Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、�
 
 ### WSL Ubuntu
 
-WSL用の構成名は`iori@wsl`です。現在のホスト設定は、ユーザー`iori`のホームを`/home/iori`とし、リポジトリを`/home/iori/clone/dotfiles`へ配置する前提です。NixとHome Managerを導入済みで、Flake機能が使える環境で次を実行してください。これらは導入手順ではなく、既存構成の検証・適用コマンドです。
+WSL用の構成名は`iori@wsl`です。ユーザー`iori`のホームを`/home/iori`、リポジトリを`/home/iori/clone/dotfiles`とする構成です。この環境ではNix/Home Managerの導入と適用が完了しています。現在Home Managerは共通CLI、Git、Neovim設定に加え、BashとZshのユーザー設定を管理します。Bashを既定シェルとして維持し、Zshもインストール・設定管理しますが、ログインシェルの切り替えは行いません。移行範囲と未移行項目は[移行計画](docs/nix-migration.md)を参照してください。
 
 ```bash
 cd /home/iori/clone/dotfiles
@@ -37,7 +37,7 @@ nix flake check path:.
 home-manager switch --flake path:.#iori@wsl
 ```
 
-WSLのHome Manager設定ではGitのユーザー名とメールアドレスを設定せず、`~/.config/git/local`を読み込みます。なお、macOS向けStowソースのGit設定にはこれらの項目が残っており、別途移行するまでリポジトリ内から完全に除外された状態ではありません。GitとNeovimはWSLでHome Managerが管理するため、WSLでは対応するStowパッケージを適用しないでください。
+WSLのHome Manager設定ではGitのユーザー名とメールアドレスを設定せず、`~/.config/git/local`を読み込みます。Bash設定ではUbuntuのシステム設定とLinuxbrew・Cargo・fzf・CUDA・WezTerm連携を維持し、存在確認をしてから読み込みます。既存の`~/.bashrc`、`~/.zshrc`、`~/.bash_aliases`は適用前にバックアップし、Bash/Zshの設定ファイルはHome Manager所有へ切り替えます。GitとNeovimもHome Manager管理のため、WSLでは対応するStowパッケージを適用しないでください。
 
 ### macOS
 

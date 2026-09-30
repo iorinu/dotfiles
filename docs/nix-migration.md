@@ -49,6 +49,28 @@ Nixpkgsは`nixos-unstable`を指定し、具体的なリビジョンを`flake.lo
 
 Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gist向け認証helperの動作を共有している。StowはHomebrewの絶対パスで`gh`を呼び出し、Home ManagerはPATHから`gh`を解決するため、Home Manager設定ではHomebrew固有のパスを避けられる一方、PATH上に`gh`が必要となる。
 
+### 2026-09-30 WSL実環境での管理状況
+
+このリポジトリをWSL Ubuntu 24.04.4（x86_64、ユーザー`iori`）で実際に検証し、`nix flake check path:.`、`home-manager build --flake path:.#iori@wsl`、`home-manager switch --flake path:.#iori@wsl`が成功した。Nix/Home Managerは作業開始時点ですでに導入済みだったため、再インストールはしていない。Flake checkでは既知の`unknown flake output 'homeManagerModules'`警告が出るが、check自体は成功する。
+
+WSLのHome Manager管理範囲:
+
+- 共通CLI: `bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`ripgrep`、`zoxide`
+- 設定: `~/.config/nvim`（リポジトリのNeovim設定へのリンク）、Git設定（identityは含めず`~/.config/git/local`をinclude）
+- Bash: `~/.bashrc`をHome Managerの`programs.bash`で管理。Ubuntuの`/etc/bash.bashrc`、bash-completion、Linuxbrew、Cargo、fzf、CUDA、WezTerm OSC 7を維持し、外部ツールは存在確認後に読み込む。既存の主要aliasとvenv aliasも宣言する。
+- Zsh: Home Managerの`programs.zsh`で`~/.zshrc`を管理し、ZshをNixで導入。`~/go/bin`をPATHへ追加する。既定ログインシェルは引き続きBashであり、切り替えていない。
+
+適用前の`~/.bashrc`、`~/.zshrc`、`~/.bash_aliases`は、`/home/iori/.local/state/dotfiles-backups/20260930T115523/`へ保存した。`.bash_aliases`の内容はBashの宣言設定へ移し、元ファイルは稼働設定として使用しない。`~/.profile`はNix installerの初期化を含むためそのまま残し、Home Managerから除外した。Home Manager生成の`.bash_profile`も無効にして、Bashが既存`.profile`を読み、その中から`.bashrc`を一度だけ読み込むようにしている。
+
+未移行・対象外:
+
+- `~/.profile`（Nix installerの初期化を含む既存ファイル）
+- `~/.bash_aliases`のファイル自体（内容はNix設定に転記後、旧ファイルはバックアップ）
+- システム設定、Windows側設定、認証情報・履歴・キャッシュ・ランタイムデータ
+- macOSのその他Stow設定とHomebrewパッケージ整理
+
+Home Managerの適用後は既存シェルには設定が遡及しないため、新しい対話シェルを起動して確認する。Home Manager世代と、Bash/Zsh設定リンク、代表的なコマンドの解決先を実環境で検証する。
+
 ## WSL側での更新
 
 この実装状況は、既定の移行方針（WSL Ubuntuから試し、macOSを先に切り替えない）を変更しない。Nix/Home Managerの導入とFlake機能の有効化が済んだWSL環境で、現在の構成を更新するときはリポジトリのルートで次を実行する。
@@ -274,7 +296,7 @@ HomebrewのFormulaをすべてNixへ機械的に置き換えない。Formulaご�
 
 ### Phase 4: 設定ファイルを1つずつ移行する（一部実装済み）
 
-WSLではGit設定と既存のNeovim設定配置がHome Managerへ移行済みである（WSL側の記録）。その他の設定とmacOS側は未移行であり、引き続き対象ごとに切り替える。
+WSLではGit、Neovimに加え、BashとZshのユーザー設定もHome Managerへ移行した。その他の設定とmacOS側は未移行であり、引き続き対象ごとに切り替える。
 
 未移行の設定は一度に全部切り替えず、次の順番を基本とする。
 
@@ -297,9 +319,9 @@ WSLではGit設定と既存のNeovim設定配置がHome Managerへ移行済み�
 
 既存の正規ファイルを、確認なしにNixのリンクで上書きしない。Stowのリンク、通常ファイル、親ディレクトリのリンクを区別して確認する。
 
-### Phase 5: Zshを共通部分とOS固有部分に分ける
+### Phase 5: Zshを共通部分とOS固有部分に分ける（WSLの基本設定を実装済み）
 
-現在の`.zshrc`はmacOS固有のPATHと共通設定が混在している。次のように分ける。
+リポジトリのmacOS向け`.zshrc`にはmacOS固有のPATHと共通設定が混在している。WSLではそのファイルを流用せず、GoのPATHだけを持つ最小のZsh設定をHome Managerで生成している。共通化は今後、機能ごとにOS差を確認して進める。
 
 ```text
 common:
