@@ -1,0 +1,50 @@
+# 暗い青灰色ベースの配色
+# 透過しても背後の白色が強く出すぎないようにする
+background = #161A22
+foreground = #D6DEE8
+background-opacity = 0.88
+background-blur = 20
+
+# Cmd+Shift+Oで透過と不透明を切り替える（macOS専用）
+keybind = cmd+shift+o=toggle_background_opacity
+
+# WezTermと同じフォントを使い、色と余白の違いを分かりやすくする
+font-family = "HackGen Console NF"
+font-size = 13
+
+# 選択範囲とカーソルは暗い背景で見やすい色にする
+selection-background = #334155
+selection-foreground = #F8FAFC
+cursor-color = #F2C777
+cursor-style = bar
+cursor-style-blink = false
+
+# ANSI 16色: 暗い背景でコントラストを確保する配色
+palette = 0=#1B1E26
+palette = 1=#F07178
+palette = 2=#A8CC8C
+palette = 3=#F2C777
+palette = 4=#82AAFF
+palette = 5=#C792EA
+palette = 6=#89DDFF
+palette = 7=#C8D3F5
+palette = 8=#6B7280
+palette = 9=#FF8A90
+palette = 10=#C3E88D
+palette = 11=#FFD580
+palette = 12=#9CC4FF
+palette = 13=#DDB6F2
+palette = 14=#A6E3E1
+palette = 15=#F8F8F2
+
+# 文字を詰めすぎず、分割時の境界を見やすくする
+window-padding-x = 18
+window-padding-y = 14
+window-padding-balance = true
+split-divider-color = #C5B9AA
+unfocused-split-opacity = 0.82
+
+# macOSの標準タイトルバーをダークテーマで使う
+window-theme = dark
+macos-titlebar-style = native
+macos-window-shadow = true

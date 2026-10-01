@@ -25,7 +25,17 @@
   xdg.configFile."termrain/config.toml".source =
     config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/termrain/.config/termrain/config.toml";
 
-  # AI設定のPhase A: 宣言のみ準備し、ライブリンクの切り替えは承認後に行う。
+  # GUI設定はmacOSで使う個別leafのみ管理し、アプリ本体はHomebrewに残す。
+  xdg.configFile."ghostty/config".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/ghostty/config";
+  xdg.configFile."wezterm/wezterm.lua".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/wezterm/wezterm.lua";
+  xdg.configFile."wezterm/keybinds.lua".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/wezterm/keybinds.lua";
+  xdg.configFile."herdr/config.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/herdr/config.toml";
+
+  # AI設定は個別leafで配置し、Stowと同じ配置先を同時に所有しない。
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/claude/CLAUDE.md";
   home.file.".claude/runcat-statusline.py".source =

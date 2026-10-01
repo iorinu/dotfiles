@@ -1,0 +1,7 @@
+onboarding = false
+
+[keys]
+# Agent パネルの前後へ移動する
+previous_agent = "prefix+up"
+next_agent = "prefix+down"
+focus_agent = "prefix+alt+1..9"

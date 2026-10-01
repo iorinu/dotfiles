@@ -2,8 +2,8 @@
 
 ## プロジェクト概要
 
-このリポジトリは macOS 向けの dotfiles を管理します。
-設定の配置には GNU Stow を使用します。
+このリポジトリは macOS と WSL Ubuntu 向けの dotfiles を管理します。
+設定の配置には GNU Stow と Nix/Home Manager を使い、移行済みパスはHome Managerだけが所有します。
 
 ## 基本方針
 
@@ -12,18 +12,23 @@
 - 秘密鍵、トークン、`.env` などの認証情報は読み書き・コミットしない。
 - 破壊的な操作（削除、上書き、`git reset --hard` など）は、実行前に確認する。
 - 外部サービスへの送信、公開、デプロイは明示的な依頼がある場合だけ行う。
+- Home ManagerとStowで同じ配置先を同時に管理しない。移行対象パッケージはStowで再適用しない。
+- Home Managerの適用（switch/activate）、Stowの実適用、ライブファイルの変更は、事前確認とユーザー承認なしに行わない。
+- 旧ソースはWSLや他のStow利用者、復旧のため保持し、明示的な依頼なしに削除しない。
 
 ## dotfiles の変更方法
 
-1. 変更対象のパッケージと既存ファイルを確認する。
+1. 変更対象のパッケージ、配置先の所有者、既存ファイルを確認する。
 2. 必要なファイルだけを編集する。
-3. GNU Stow を dry-run で検証する。
+3. Home Manager設定はFlake checkと対象構成の評価・ビルドで検証し、Stow対象はGNU Stowのdry-runで検証する。実行前にコマンドがライブ環境を変更しないことを確認する。
 
 ```sh
 stow --simulate --verbose <package>
 ```
 
-4. 問題がなければ、ユーザーの許可を得て適用する。
+移行対象のStowパッケージには削除・再適用を行わない。Stowの削除simulationが無関係なリンクを扱う場合も実行しない。
+
+4. 問題がなければ、手順と差分を提示し、ユーザーの許可を得てから適用する。
 
 ```sh
 stow --restow <package>
@@ -45,12 +50,22 @@ git status --short
 zsh -n path/to/file.zsh
 ```
 
+Home Manager設定を変更した場合は、次の非適用検証を行う。`nix build`はactivation packageをビルドするだけで、Home Managerを適用せず、`--no-link`によりリポジトリ内に`result`リンクを作らない。switch/build結果やライブ状態を未確認のまま適用済みと記載しない。macOS構成名の例は`iori@macos`。
+
+```sh
+nix flake check --no-write-lock-file
+nix build ".#homeConfigurations.\"<configuration>\".activationPackage" --no-link --no-write-lock-file
+```
+
+`nix build`は`--no-link`を付けることでrepo内にresultリンクを作らない。
+
 ## Git
 
 - コミット前に差分を確認する。
 - コミットメッセージは英語で書く。
 - `push` の依頼は、特別な指示がなければコミット作成後に push する。
 - 依頼に含まれない変更はコミットしない。
+- Git commitはユーザーが明示的に依頼した場合だけ行う。
 
 <skills_system priority="1">
 
