@@ -54,7 +54,7 @@
     config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/hermes/skills/software-development/requirements-to-docs/SKILL.md";
   home.file.".hermes/skills/software-development/spec-driven-delivery/SKILL.md".source =
     config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/.config/hermes/skills/software-development/spec-driven-delivery/SKILL.md";
-  # ローカルYAMLは従来パスを維持し、内容をNix storeへ取り込まない。
+  # Git管理YAMLは実行時にリポジトリを参照し、Flakeのソーススナップショットには含まれる。値はNixで生成しない。
   home.file.".hermes/config.yaml".source =
     config.lib.file.mkOutOfStoreSymlink "/Users/iori/.dotfiles/hermes/.hermes/config.yaml";
 

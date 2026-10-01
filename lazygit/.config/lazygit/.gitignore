@@ -1,2 +1,3 @@
 # lazygit のランタイム情報 (起動状態・最近開いたレポ等) は管理対象外
 state.yml
+/github_pull_requests.json
