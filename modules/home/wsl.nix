@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   home.packages = [
+    pkgs.blesh
     pkgs.herdr
     pkgs.peco
   ];
@@ -26,6 +27,11 @@
       venvout = "deactivate";
     };
     bashrcExtra = ''
+      # Add fish/zsh-style syntax highlighting while preserving later bindings.
+      if [[ $- == *i* ]]; then
+        source -- ${pkgs.blesh}/share/blesh/ble.sh --attach=none
+      fi
+
       # Preserve Ubuntu's system prompt, sudo hint, and command-not-found handler.
       if [ -r /etc/bash.bashrc ]; then
         . /etc/bash.bashrc
@@ -72,6 +78,19 @@
         printf '\e]7;file://%s%s\e\\' "''${HOSTNAME}" "''${PWD}"
       }
       PROMPT_COMMAND="__wezterm_osc7''${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+
+      if [[ ''${BLE_VERSION-} ]]; then
+        # Match the macOS behavior: known commands are green, invalid input red.
+        ble-face -s syntax_command fg=red
+        ble-face -s syntax_error fg=red
+        ble-face -s command_builtin_dot fg=green,bold
+        ble-face -s command_builtin fg=green
+        ble-face -s command_alias fg=green
+        ble-face -s command_function fg=green
+        ble-face -s command_file fg=green
+        ble-face -s command_keyword fg=green
+        ble-attach
+      fi
     '';
   };
 
