@@ -18,7 +18,7 @@
 
 ## 現在の構成
 
-現在はGNU StowとHome Managerでパッケージごとに所有を分けている。WSLでは共通CLI・Git・Neovim・Bash・Zsh、macOSでは共通CLI・Neovim・Zsh・lazygit・zeno・nb・termrain設定に加えてAI・GUI設定をHome Managerへ移行済みである。WSLのAI設定とlazygit、zeno、nb、termrain設定は未移行である。Homebrewのパッケージ一覧は`homebrew/Brewfile`で管理している。
+現在はGNU StowとHome Managerでパッケージごとに所有を分けている。WSLでは共通CLI・Git・Neovim・Bash・Zsh・AI設定、macOSでは共通CLI・Neovim・Zsh・lazygit・zeno・nb・termrain設定に加えてAI・GUI設定をHome Managerへ移行済みである。WSLのlazygit、zeno、nb、termrain設定は未移行である。Homebrewのパッケージ一覧は`homebrew/Brewfile`で管理している。
 
 主なパッケージは次のとおり。
 
@@ -69,7 +69,9 @@ Git設定とGit identityはmacOS Home Managerの対象外で、Stow管理を継�
 
 2026-10-01にユーザー承認後、AI 15 leafとGUI 4 leafの計19リンクをHome Managerで実適用した。旧Stowリンク18件は、元リンクと同じ親ディレクトリに`<元の名前>.stow-backup-nix-20261001T154203`として退避した。相対リンクの解決先を変えないため、復旧記録のディレクトリへリンク自体を移動してはいない。復旧記録と非秘密ソースのバックアップは`/Users/iori/.local/state/dotfiles-backups/nix-ai-gui-20261001T154203/`に保存している。`cutover-manifest.json`には19対象・18退避先・旧新世代、`cutover-status.json`には検証結果を記録した。現在generation 6が有効で、旧ソースは削除・変更していない。Stowの一括解除simulationでは無関係な`~/.nbrc.stow-backup`も解除対象になったため、実際の一括解除は行わず、承認済み18リンクだけを明示的に退避した。移行済み対象をStowで再適用しない。
 
-WSLのAI設定は未移行であり、WSLのhosts/modulesには今回の宣言を追加していない。将来旧追跡ソースを削除する前に、WSLや他のStow利用者の移行・復元手順を確認する。それらの利用者は稼働中のStow構成を更新する前に新配置へ移行するか、従来のソースを復元する必要がある。
+WSLのAI設定は、macOSと共通の非認証設定を中心に13個の個別leafとしてHome Managerへ移行した。Claude Codeは共通設定内の絶対パスを`$HOME`参照へ変更し、CodexはWSL向けの`config-wsl.toml`で同じ既定モデル・推論強度・portable plugin設定を使う。macOS専用のCodex LaunchAgent、ChatGPT Desktop連携、RunCat定期処理は移植していない。認証情報、履歴、ログ、ランタイムデータは管理対象外である。
+
+2026-10-05にユーザー承認後、WSLのAI 13 leafをHome Manager generation 13として適用した。競合した既存ファイル9件は`/home/iori/.local/state/dotfiles-backups/wsl-ai-20261005T013840/`へ退避し、全13 leafがリポジトリ内の意図したソースへ解決することを確認した。Claude Code設定のJSON、Codex設定のTOML、status lineのPython構文、Codexのstrict config、Hermesの既定・委譲モデル設定を検証済みである。OpenCode本体はWSLに未導入のため、設定配置とJSON構文のみ確認した。
 
 ### GUI設定（macOS適用済み）
 
@@ -117,7 +119,7 @@ Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gi
 |---|---|
 | macOS移行済み・WSL未移行 | macOSではlazygitの`config.yml`をHome Managerで配置し、Nix版アプリで設定読み込みと日本語UIを確認済み。zeno、nb、termrainもHome Manager配置済み。zenoのネイティブ動作、nbのノート操作、termrain実設定の構文・ネットワーク機能は未検証。WSL側はmacOSの前提ではなく、配置先とStow所有状態を確認して別途移行する |
 | macOS適用済み・対話シェル未確認、WSL基本Zsh設定適用済み | Home Manager generation 6が現在の世代。`~/.zshrc`はmacOSで`modules/home/zsh/macos.zsh`へのHome Managerリンク。WSLはNix Home Managerが最小の`.zshrc`を生成し、`~/go/bin`をPATHへ追加する。macOS側は新エントリポイントの構文・112個の実行文順序・Nix check/build・Stow unlink simulationを確認済みだが、通常起動とKeychainを含む設定sourceは未確認。WSL側は`zsh -n`とlogin-shellでGo PATHを確認済み |
-| macOS AI・GUI適用済み、WSL AI未移行 | AI 15 leafとGUI 4 leafの計19をHome Managerで適用し、旧Stow link 18件を退避済み。CLI構文とライブlink検証は成功。GUI操作、Claude対話/hooks、AI推論、サービス再起動、実rollbackは未検証。旧sourceは保持する |
+| macOS AI・GUI、WSL AI適用済み | macOSはAI 15 leafとGUI 4 leaf、WSLはAI 13 leafをHome Managerで管理する。CLI構文とライブlink検証は成功。GUI操作、Claude対話/hooks、AI推論、サービス再起動、実rollbackは未検証。旧sourceは保持する |
 | 重複あり | HomebrewとNixの共通CLIをFormulaごとに分類し、Nixへ寄せるものとHomebrewに残すものを決めてから重複を整理する |
 
 ### 対象ごとに判断する事項
@@ -139,7 +141,7 @@ home-manager switch --flake path:.#iori@wsl
 
 WSLのNeovim参照宣言は更新済みだが、新配置の適用・動作は未検証である。ローカルのNeovim画像は管理対象外であり、そのホストでも必要に応じて旧画像パスへのリンクを用意する。
 
-Git、Neovim、Bash、ZshはHome Managerへ移行済みなので、WSLでは対応するStowパッケージを再適用しない。WSLのlazygit、zeno、nb、termrain、AI設定は未移行である。設定ファイルを追加で移す際も、受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。macOSではZsh、Neovim、lazygit、zeno、nb、termrain、AI、Ghostty、WezTerm、herdrのStowパッケージを再適用しない。
+Git、Neovim、Bash、Zsh、AI設定はHome Managerへ移行済みなので、WSLでは対応するStowパッケージを再適用しない。WSLのlazygit、zeno、nb、termrainは未移行である。設定ファイルを追加で移す際も、受入条件に従って対象ごとにStowとの所有を切り替え、同一パスを両方で管理しない。macOSではZsh、Neovim、lazygit、zeno、nb、termrain、AI、Ghostty、WezTerm、herdrのStowパッケージを再適用しない。
 
 旧`.zshrc`には、次のようなmacOS固有の記述がある。これをそのまま共通設定としてWSLへ配置してはいけない。macOS用Zshは`modules/home/zsh/`に分割してHome Managerへ適用済み。WSL用にはmacOS設定を流用せず、`~/go/bin`を追加する最小設定をHome Managerで管理している。
 

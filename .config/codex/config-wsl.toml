@@ -1,0 +1,54 @@
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
+
+[projects."/home/iori"]
+trust_level = "trusted"
+
+[projects."/home/iori/src/github.com/iorinu/dotfiles"]
+trust_level = "trusted"
+
+[marketplaces.claude-plugins-official]
+source_type = "git"
+source = "https://github.com/anthropics/claude-plugins-official.git"
+
+[plugins."code-review@claude-plugins-official"]
+enabled = true
+
+[plugins."code-simplifier@claude-plugins-official"]
+enabled = true
+
+[plugins."commit-commands@claude-plugins-official"]
+enabled = true
+
+[plugins."feature-dev@claude-plugins-official"]
+enabled = true
+
+[plugins."github@claude-plugins-official"]
+enabled = true
+
+[plugins."lua-lsp@claude-plugins-official"]
+enabled = true
+
+[plugins."pyright-lsp@claude-plugins-official"]
+enabled = true
+
+[plugins."rust-analyzer-lsp@claude-plugins-official"]
+enabled = true
+
+[plugins."session-report@claude-plugins-official"]
+enabled = true
+
+[plugins."typescript-lsp@claude-plugins-official"]
+enabled = true
+
+[plugins."vercel@claude-plugins-official"]
+enabled = true
+
+[features]
+hooks = true
+
+[shell_environment_policy]
+inherit = "core"
+
+[shell_environment_policy.set]
+USE_BUILTIN_RIPGREP = "0"

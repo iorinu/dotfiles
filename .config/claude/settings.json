@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash '/Users/iori/.claude/hooks/herdr-agent-state.sh' session",
+            "command": "bash \"$HOME/.claude/hooks/herdr-agent-state.sh\" session",
             "timeout": 10
           }
         ]
@@ -32,7 +32,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "/Users/iori/.claude/runcat-statusline.py"
+    "command": "$HOME/.claude/runcat-statusline.py"
   },
   "enabledPlugins": {
     "pyright-lsp@claude-plugins-official": true,

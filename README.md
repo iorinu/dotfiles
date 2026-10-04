@@ -2,7 +2,7 @@
 
 macOSとWSL Ubuntuで使う個人設定ファイル群。
 
-Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、共通CLI、Bash、ZshをHome Managerで管理し、macOSでも`iori@macos`を適用済みです。macOSでは共通CLI、Neovim、Zsh、lazygit・zeno・termrainの設定、`.nbrc`、AI設定、Ghostty/WezTerm/herdr設定を移行済みです。現在のgenerationは6です。Git設定・identityは対象外です。Homebrewの共通CLIパッケージはまだ削除していないため、Nixとの重複があります。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
+Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、共通CLI、Bash、Zsh、AI設定をHome Managerで管理し、macOSでも`iori@macos`を適用済みです。macOSでは共通CLI、Neovim、Zsh、lazygit・zeno・termrainの設定、`.nbrc`、AI設定、Ghostty/WezTerm/herdr設定を移行済みです。Git設定・identityは対象外です。Homebrewの共通CLIパッケージはまだ削除していないため、Nixとの重複があります。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
 
 ## 構成
 
@@ -34,7 +34,7 @@ AI設定はmacOSでHome Managerへ切り替え済みです。追跡済み旧ソ�
 
 Ghostty、WezTerm、herdrの追跡設定4ファイルは`.config/{ghostty,wezterm,herdr}/`に配置し、macOS構成の個別leafとしてHome Managerへ切り替え済みです。GUIアプリ導入はHomebrewのままで、ディレクトリ全体は管理しません。GUI 4 leafもHome Manager管理で、AIと合わせて現在generation 6です。退避した旧Stowリンク18件のリンク文字列と解決先は維持しています。WezTermは旧親ディレクトリリンクを退避し、同名の実ディレクトリに設定2 leafを配置しました。herdrのログ・socket・session.json等のランタイム、AIの認証情報・ログ・他プロフィールは対象外です。旧ソースは復元・他Stow利用者のため保持します。
 
-AI・GUI設定はHermesのレビューと明示承認後に実適用済みです。移行済みAI/GUIパッケージをStowで再適用しないでください。通常のmacOS更新は`home-manager switch --flake .#iori@macos --no-write-lock-file`を使います。未移行の既存Stowホストでは、再適用前に所有切替手順が必要です。WSLのAI設定は未移行です。旧追跡ソースはWSLや他のStow利用者、復元のため保持します。
+AI設定はmacOSとWSLの両方でHome Managerへ移行済みです。macOS専用のCodex LaunchAgent、ChatGPT Desktop連携、RunCat定期処理はWSLへ移植していません。認証情報、履歴、ログ、ランタイムデータは管理対象外です。移行済みAI/GUIパッケージをStowで再適用しないでください。
 
 ## セットアップ
 
@@ -50,7 +50,7 @@ home-manager switch --flake path:.#iori@wsl
 
 Neovimの配置整理後の参照宣言は更新済みですが、WSLでの新配置適用・動作確認は未検証です。ローカル画像は管理対象外のため、そのホストでも必要に応じて旧画像パスへのリンクを用意してください。
 
-WSLのHome Manager設定ではGitのユーザー名とメールアドレスを設定せず、`~/.config/git/local`を読み込みます。Bash設定ではUbuntuのシステム設定とLinuxbrew・Cargo・fzf・CUDA・WezTerm連携を維持し、存在確認をしてから読み込みます。既存の`~/.bashrc`、`~/.zshrc`、`~/.bash_aliases`は適用前にバックアップし、Bash/Zshの設定ファイルはHome Manager所有へ切り替えます。GitとNeovimもHome Manager管理のため、WSLでは対応するStowパッケージを適用しないでください。
+WSLのHome Manager設定ではGitのユーザー名とメールアドレスを設定せず、`~/.config/git/local`を読み込みます。Bash設定ではUbuntuのシステム設定とLinuxbrew・Cargo・fzf・CUDA・WezTerm連携を維持し、存在確認をしてから読み込みます。既存の`~/.bashrc`、`~/.zshrc`、`~/.bash_aliases`は適用前にバックアップし、Bash/Zshの設定ファイルはHome Manager所有へ切り替えます。Git、Neovim、AI設定もHome Manager管理のため、WSLでは対応するStowパッケージを適用しないでください。
 
 ### macOS
 
