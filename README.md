@@ -40,10 +40,10 @@ AI・GUI設定はHermesのレビューと明示承認後に実適用済みです
 
 ### WSL Ubuntu
 
-WSL用の構成名は`iori@wsl`です。ユーザー`iori`のホームを`/home/iori`、リポジトリを`/home/iori/clone/dotfiles`とする構成です。この環境ではNix/Home Managerの導入と適用が完了しています。現在Home Managerは共通CLI、Git、Neovim設定に加え、BashとZshのユーザー設定を管理します。Bashを既定シェルとして維持し、Zshもインストール・設定管理しますが、ログインシェルの切り替えは行いません。移行範囲と未移行項目は[移行計画](docs/nix-migration.md)を参照してください。
+WSL用の構成名は`iori@wsl`です。ユーザー`iori`のホームを`/home/iori`、リポジトリをghq管理下の`/home/iori/src/github.com/iorinu/dotfiles`とする構成です。この環境ではNix/Home Managerの導入と適用が完了しています。現在Home Managerは共通CLI、Git、Neovim設定に加え、BashとZshのユーザー設定を管理します。Bashを既定シェルとして維持し、Zshもインストール・設定管理しますが、ログインシェルの切り替えは行いません。移行範囲と未移行項目は[移行計画](docs/nix-migration.md)を参照してください。
 
 ```bash
-cd /home/iori/clone/dotfiles
+cd /home/iori/src/github.com/iorinu/dotfiles
 nix flake check path:.
 home-manager switch --flake path:.#iori@wsl
 ```

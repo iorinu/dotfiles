@@ -1,6 +1,9 @@
 { pkgs, ... }:
 {
-  home.packages = [ pkgs.herdr ];
+  home.packages = [
+    pkgs.herdr
+    pkgs.peco
+  ];
 
   programs.zoxide = {
     enable = true;
@@ -50,6 +53,19 @@
         last_command=$(history 1 | sed -E 's/^ *[0-9]+ *//; s/[;&|] *alert$//')
         notify-send --urgency=low -i "$([ "$command_status" -eq 0 ] && echo terminal || echo error)" "$last_command"
       }
+
+      # Select a ghq repository with peco and change to it with Ctrl-x j.
+      peco-src() {
+        local query selected_dir
+        query="''${READLINE_LINE:0:READLINE_POINT}"
+        selected_dir=$(ghq list -p | peco --prompt="repositories >" --query="$query") || return
+        if [ -n "$selected_dir" ]; then
+          cd -- "$selected_dir" || return
+          READLINE_LINE=
+          READLINE_POINT=0
+        fi
+      }
+      bind -x '"\C-xj": peco-src'
 
       # Retain the WSL-terminal working-directory notification.
       __wezterm_osc7() {
