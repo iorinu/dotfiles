@@ -1,5 +1,13 @@
 { pkgs, ... }:
 {
+  home.packages = [ pkgs.herdr ];
+
+  programs.zoxide = {
+    enable = true;
+    enableBashIntegration = true;
+    enableZshIntegration = true;
+  };
+
   programs.bash = {
     enable = true;
     enableCompletion = true;
