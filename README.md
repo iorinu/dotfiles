@@ -2,7 +2,7 @@
 
 macOSとWSL Ubuntuで使う個人設定ファイル群。
 
-Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、共通CLI、Bash、Zsh、AI設定をHome Managerで管理し、macOSでも`iori@macos`を適用済みです。macOSでは共通CLI、Neovim、Zsh、lazygit・zeno・termrainの設定、`.nbrc`、AI設定、Ghostty/WezTerm/herdr設定を移行済みです。Git設定・identityは対象外です。Homebrewの共通CLIパッケージはまだ削除していないため、Nixとの重複があります。実装状況と今後の作業は[移行計画](docs/nix-migration.md)を参照してください。
+Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、共通CLI、Bash、Zsh、AI設定をHome Managerで管理し、macOSでも`iori@macos`を適用済みです。macOSでは共通CLI、Neovim、Zsh、lazygit・zeno・termrainの設定、`.nbrc`、AI設定、Ghostty/WezTerm/herdr設定を移行済みです。Git設定・identityは対象外です。Homebrewの重複CLI 9種（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`zoxide`）は削除済みで、`ripgrep`はNix版をユーザーPATHに、Homebrew版をHomebrew `opencode`の依存として維持しています。実装状況と検証範囲は[移行計画](docs/nix-migration.md)を参照してください。
 
 ## 構成
 
@@ -54,9 +54,9 @@ WSLのHome Manager設定ではGitのユーザー名とメールアドレスを�
 
 ### macOS
 
-Home Manager構成`iori@macos`は適用済みで、generation 6が現在の世代、generation 1〜6が利用可能です。macOS arm64上で`nix flake check --no-write-lock-file`とmacOS activation packageのビルドが成功しています。既存の`unknown flake output homeManagerModules`警告は出ます。Home ManagerはユーザーNix設定で`nix-command`と`flakes`を管理します。`home-manager`、`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`nvim`、`rg`、`zoxide`は`~/.nix-profile/bin`から解決されます。`~/.config/nvim`はHome Managerのリンクでリポジトリの`.config/nvim`を参照し、以前の配置整理後はヘッドレス起動に成功しました（従来と同じ51個のプラグイン名、45個の画像フレームへのアクセスを確認。以前の初期起動では23個をロード。遅延ロードされる個別プラグインの動作は未確認）。VimTeXの`view_method`は`skim`です。NeovimのStowリンクは`~/.config/nvim.stow-backup`に保存されています。`~/.config/lazygit`は実ディレクトリで、Home Manager管理の`config.yml`リンクがリポジトリの`.config/lazygit/config.yml`を参照します。以前のStowディレクトリリンクは`~/.config/lazygit.stow-backup`に保存されています。`state.yml`と`github_pull_requests.json`はHome Managerの管理対象ではなく、ライブディレクトリ内の個別リンクから元のリポジトリパスを参照します。Nix版lazygit v0.65.1で実設定を使った一時リポジトリの起動を確認し、日本語UIが表示され、`q`で終了しました。元の状態ファイルを使わずに設定の読み込みを確認しています。Home Managerはzenoの`config.yml`、`.nbrc`、termrainのサンプル設定と既存のローカル`config.toml`へのリンクも管理します。追跡対象の3つは新配置のソース、termrainの実設定は従来の`termrain/.config/termrain/config.toml`を参照し、以前のStowリンクは`~/.config/zeno.stow-backup`、`~/.nbrc.stow-backup`、`~/.config/termrain.stow-backup`に保存されています。termrainの実設定はGit管理外のローカルファイルで、内容を確認せずNix storeにも取り込んでいません。隔離した環境で`.nbrc`の読み込みを`EDITOR=nvim`および`NB_DIR`設定下で確認しましたが、nbのノート操作は未確認です。zenoのネイティブ動作、termrain実設定の構文やネットワーク機能も未検証です。Git設定・Git identityはHome Managerの対象外で、Homebrewの共通CLIパッケージは未削除のためNixと重複しています。
+Home Manager構成`iori@macos`は適用済みで、generation 6が現在の世代、generation 1〜6が利用可能です。macOS arm64上で`nix flake check --no-write-lock-file`とmacOS activation packageのビルドが成功しています。既知の`unknown flake output homeManagerModules`とdirty tree警告があります。新しいPATH prefixを隔離環境でテストした際、よく使う10コマンドはすべて`~/.nix-profile/bin`から解決されました（通常のシェル起動全体での再テストではありません）。Homebrewから重複9 CLIを削除し、`ripgrep`は`opencode`依存として残しています。Neovimは51宣言の読み込みと特定2 pluginの機能を確認済みです。VimTeXの`view_method`は`skim`です。検証範囲と残る制限は[2026-10-07検証記録](docs/nix-migration.md#2026-10-07-検証と復旧記録)を参照してください。
 
-配置整理前の世代や共通設定の旧Stowリンクに戻す場合は、変更前のGitリビジョンまたは保持したローカルバックアップから旧ソース配置を復元してください。今回移行したAI・GUIの旧ソースは残しており、generation 5への切り戻しと18リンクの復元手順を記録しています。復帰操作自体は未検証です。詳しくは[ロールバック](docs/nix-migration.md#ロールバック)を参照してください。
+配置整理前の世代や共通設定の旧Stowリンクに戻す場合は、変更前のGitリビジョンまたは保持したローカルバックアップから旧ソース配置を復元してください。generation 5/6のactivate scriptは`DRY_RUN=1 VERBOSE=1`での確認のみで、実切り戻しや旧Stowリンク復元は未実施です。世代切替ではout-of-storeの現在のZshソースやBrewfile変更は戻りません。詳しくは[ロールバック](docs/nix-migration.md#ロールバック)と[2026-10-07検証記録](docs/nix-migration.md#2026-10-07-検証と復旧記録)を参照してください。
 
 ```bash
 # 1. Homebrew のインストール (未導入の場合)
