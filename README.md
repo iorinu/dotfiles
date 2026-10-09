@@ -4,6 +4,8 @@ macOSとWSL Ubuntuで使う個人設定ファイル群。
 
 Nix/Home Managerへ段階的に移行しています。WSLではGit、Neovim、共通CLI、Bash、Zsh、AI設定をHome Managerで管理し、macOSでも`iori@macos`を適用済みです。macOSでは共通CLI、Neovim、Zsh、lazygit・zeno・termrainの設定、`.nbrc`、AI設定、Ghostty/WezTerm/herdr設定を移行済みです。Git設定・identityは対象外です。Homebrewの重複CLI 9種（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`zoxide`）は削除済みで、`ripgrep`はNix版をユーザーPATHに、Homebrew版をHomebrew `opencode`の依存として維持しています。実装状況と検証範囲は[移行計画](docs/nix-migration.md)を参照してください。
 
+今回の受入範囲では、通常のZsh起動/Keychain、ZLE UI、残りのNeovimプラグイン/LSP/AI、GUI操作、実ノート・天気/ネットワークなどの追加実環境検証と実際のrollbackは必須ではなく、未検証の制限として記録しています。Neovimのプラグイン管理はlazy.nvimを継続し、macOSシステム設定をNix/nix-darwinで管理する予定はありません。HomebrewのFormula整理などは未決で、実施承認されていません。詳細は[移行計画](docs/nix-migration.md)を参照してください。
+
 ## 構成
 
 | ディレクトリ | 内容 |

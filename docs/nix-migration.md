@@ -7,7 +7,7 @@
 最初からすべてをNixへ置き換えず、次の構成を目標に段階的に移行する。
 
 - macOSのユーザー環境: Home Manager
-- macOSのシステム設定: 必要になった段階でnix-darwin
+- macOSのシステム設定: Nix/nix-darwinでは管理しない
 - WSL Ubuntuのユーザー環境: Home Manager
 - macOSのGUIアプリ: Homebrewを継続利用
 - Windows側のGUIアプリ: Windows側で管理
@@ -31,7 +31,7 @@
 | パッケージ | 主な内容 | 移行候補 |
 |---|---|---|
 | `zsh/` | 旧Stow用`.zshrc`ソース | macOSは`modules/home/zsh/macos.zsh`、WSLはHome Managerで`~/go/bin`をPATHに追加する最小設定 |
-| `.config/nvim/` | Neovimとlazy.nvimの設定 | `xdg.configFile`（macOS適用済み、WSLは参照宣言更新済み・新配置の適用/動作未検証） |
+| `.config/nvim/` | Neovimとlazy.nvimの設定（プラグイン管理はlazy.nvimを継続） | `xdg.configFile`（macOS適用済み、WSLは参照宣言更新済み・新配置の適用/動作未検証） |
 | `wezterm/` | WezTerm設定 | macOSの個別leaf宣言で適用済み（旧source保持） |
 | `git/` | `.gitconfig` | WSLのみHome Managerで管理。macOSでは対象外 |
 | `.config/zeno/config.yml` | zeno.zsh設定 | `xdg.configFile` |
@@ -45,7 +45,7 @@
 | `.config/termrain/config.example.toml` | termrainサンプル（`termrain/`にローカル実設定を保持） | `xdg.configFile` |
 | `.config/codex/` | Codex設定と`launchd/`のplist（旧`codex/`も保持） | macOSの`home.file`宣言で適用済み |
 | `.config/hermes/` | 共通SOUL、docs、skills（旧`hermes/`も保持） | macOSの`home.file`宣言で適用済み。Git追跡YAMLは従来パス |
-| `homebrew/` | Formula、Cask、Cargo、uv、npmなど | 共通CLIはNix、GUIとNixに載せにくいものはHomebrew |
+| `homebrew/` | Formula、Cask、Cargo、uv、npmなど | Brewfileを維持。GUIアプリと既存のHomebrew項目を管理し、Formula整理は未決 |
 
 Ghostty、WezTerm、herdrの追跡設定4ファイルは`.config/{ghostty,wezterm,herdr}/`へ旧sourceとバイト一致でコピーし、`hosts/macos.nix`の4個別leaf `xdg.configFile`宣言で適用済みである。GUIアプリ導入は既存のHomebrewを維持し、ディレクトリ全体は管理しない。旧ソースはWSL・他のStow利用者・復旧のため保持する。
 
@@ -103,31 +103,38 @@ Stow設定とHome Manager設定は、`ghq.root`、既定ブランチ、GitHub/Gi
 
 ## 未完了の作業
 
-以下は現在の実装状況に基づく次の作業である。「適用済み」はHome Managerの適用記録を指し、アプリケーションの完全な動作確認まで済んだことを意味しない。
+以下は現在の実装状況と今回の受入範囲を示す。「適用済み」はHome Managerの適用記録を指し、アプリケーションの完全な動作確認まで済んだことを意味しない。
 
-### 検証が残っている項目
+### 今回の受入範囲の決定
+
+追加の実環境検証（通常のZsh起動とKeychain、ZLE UI、残りのNeovimプラグイン/LSP/AI機能、GUI操作、実ノート・天気/ネットワーク）は今回の必須作業ではなく、未検証範囲として残す。既存の限定検証記録はそのまま有効な範囲で保持し、未実施の検証を成功扱いしない。実際のrollback roundtripも未実施で、今回の受入には不要である。generation、バックアップ、復旧上の注意とdry-run記録は保持し、実rollbackは別途ユーザーの明示依頼・承認がある場合に限る。
+
+Neovimのプラグイン管理はlazy.nvimを継続し、Nixへの管理移行は予定しない。Neovimのバイナリと設定はHome Manager管理を継続できる。macOSのシステム設定はNix/nix-darwinで管理せず、nix-darwin導入予定もない。macOSユーザー環境はHome Manager、GUIアプリとBrewfileはHomebrewで管理し、範囲を拡大しない。その他のHomebrew Formula選択、macOS Git、WSLの残作業は任意の未決事項であり、実装承認ではない。WSLの未決作業はmacOS側の完了条件にしない。
+
+### 未検証範囲（追加検証は今回行わない）
 
 | 状態 | 次の作業 | 確認方法 |
 |---|---|---|
-| macOS Neovimの限定的な機能確認済み・一部未検証 | 遅延ロードプラグインの個別機能 | 2026-10-07、隔離したネイティブ起動で51宣言を読み込み、`kutoten-toggle.nvim`と`nvim-cmp`を強制ロードして確認。Zen/Han/Normalコマンド登録と句読点変換、cmp source登録を確認した。その他のlazy plugin、編集・GUI・描画・LSP・AI機能は未確認。 |
-| WSL CLI・Git・Neovim・Bash・Zsh適用済み | Windows側PATHの整理と未移行アプリ設定 | シェル起動・構文・alias/function・Go PATHは確認済み。WSLで`command -v`と基本動作を追加確認し、Windows側PATHがLinuxコマンドを意図せず優先しないことを確認する |
-| macOSは世代1〜7が利用可能。generation 5/6は過去にdry-run検証済み、現在のgeneration 7候補もdry-run検証済み。実際の復帰は未実施。WSL未検証 | 両ホストでのロールバック手順 | generation 5/6のactivation dry-runと19 live/18 backup metadata checks、および現在のgeneration 7候補のdry-runは成功したが、実際の復帰は未実施。WSLも未検証。配置整理前の世代への復帰には、旧ソース配置の復元も必要である |
+| macOS Neovimの限定的な機能確認済み・一部未検証 | 残りのプラグイン、編集・GUI・描画・LSP・AI機能 | 2026-10-07、隔離したネイティブ起動で51宣言を読み込み、`kutoten-toggle.nvim`と`nvim-cmp`を強制ロードして確認。Zen/Han/Normalコマンド登録と句読点変換、cmp source登録を確認した。追加の個別機能検証は今回行わず、その他は未検証。 |
+| 実環境の追加検証は今回の必須範囲外 | 通常のZsh起動とKeychain、ZLE UI、GUI操作、実ノート、termrain天気/ネットワーク | 既存記録の限定検証結果を維持する。これらは未検証であり、今回追加検証しない。 |
+| macOSは世代1〜7が利用可能。generation 5/6およびgeneration 7候補のdry-run記録あり。実際の復帰は未実施 | 実際のrollback roundtrip | 今回は実施・受入要件ではない。dry-run、generation、バックアップと復旧上の注意は保持する。実rollbackには別途明示依頼・承認が必要。 |
+| WSLの未移行設定・実行時確認 | Windows側PATHの整理と未移行アプリ設定 | 別途任意のWSL作業として扱い、macOSの完了条件にしない。 |
 
-### 次に移行する設定・整理
+### 別途判断する設定・整理
 
 | 状態 | 対象と次の作業 |
 |---|---|
-| macOS移行済み・WSL未移行 | macOSではlazygitの日本語TUI、zenoのネイティブCLI、一時ノートブックでのnb init/add/show/searchを確認済み。ZLE統合・補完UI、実ノートと実`.nbrc`を使う操作、termrain実設定の構文・ネットワーク機能は未検証。WSL側は配置先とStow所有状態を確認して別途移行する |
-| macOS適用済み・対話シェル未確認、WSL基本Zsh設定適用済み | Home Manager generation 7が現在の世代。`~/.zshrc`はmacOSで`modules/home/zsh/macos.zsh`へのHome Managerリンク。WSLはNix Home Managerが最小の`.zshrc`を生成し、`~/go/bin`をPATHへ追加する。macOS側は切替時の履歴的検証として新エントリポイントの構文・旧設定との112個の実行文順序・Nix check/build・Stow unlink simulationを確認済み。新しいPATH prefixの隔離検証も済んでいるが、通常起動とKeychainを含む設定sourceは未確認。WSL側は`zsh -n`とlogin-shellでGo PATHを確認済み |
+| macOS移行済み・WSL未移行 | macOSではlazygitの日本語TUI、zenoのネイティブCLI、一時ノートブックでのnb init/add/show/searchを確認済み。ZLE統合・補完UI、実ノートと実`.nbrc`を使う操作、termrain実設定の構文・ネットワーク機能は未検証で、今回追加検証しない。WSL側は任意の別作業とする |
+| macOS適用済み・通常起動未検証、WSL基本Zsh設定適用済み | Home Manager generation 7が現在の世代。`~/.zshrc`はmacOSで`modules/home/zsh/macos.zsh`へのHome Managerリンク。WSLはNix Home Managerが最小の`.zshrc`を生成し、`~/go/bin`をPATHへ追加する。macOS側は切替時の履歴的検証として新エントリポイントの構文・旧設定との112個の実行文順序・Nix check/build・Stow unlink simulationを確認済み。新しいPATH prefixの隔離検証も済んでいるが、通常起動とKeychainを含む設定sourceは未確認で、今回追加検証しない。WSL側は`zsh -n`とlogin-shellでGo PATHを確認済み |
 | macOS AI・GUI、WSL AI適用済み | macOSはAI 15 leafとGUI 4 leaf、WSLはAI 13 leafをHome Managerで管理する。CLI構文とライブlink検証は成功。GUI操作、Claude対話/hooks、AI推論、サービス再起動、実rollbackは未実施。旧sourceは保持する |
-| 9種の重複CLI削除済み | `ripgrep`はNix版をユーザーPATH用、Homebrew版をHomebrew `opencode`の依存用に維持する。その他のFormula/Cask整理は依頼対象外 |
+| 9種の重複CLI削除済み | `ripgrep`はNix版をユーザーPATH用、Homebrew版をHomebrew `opencode`の依存用に維持する。その他のFormula/Cask選択は未決で、実装承認されていない |
 
 ### 対象ごとに判断する事項
 
 - WSLでsystemdを使うか、WezTermをWindowsとWSLのどちらで実行するかを実機で確認する。WezTermの移行前に実行ホストと設定の所有境界を決める。
-- macOSのシステム設定をnix-darwinで管理する範囲と、将来NixOS-WSLへ移行するかを必要性に応じて判断する。現状nix-darwin出力はない。
+- 将来NixOS-WSLへ移行するかを必要性に応じて判断する。
 - Homebrew FormulaをNix、Homebrew、WSLでは不要、要調査に分類する。
-- Neovimプラグインは現在lazy.nvimが管理している。Nix管理へ変更するかは未決であり、変更する場合も別途評価する。
+- Neovimプラグイン管理はlazy.nvimを継続する（決定済み）。
 - macOSのGit設定は引き続きStow所有とし、Home Managerの対象外とする。Git identity設定をWSLの`~/.config/git/local`方式とどう整合させるかは未決である。
 
 ## macOSでの更新
@@ -206,14 +213,14 @@ macOSとWSL Ubuntuの両方に存在し、同じ動作を期待するものを�
 
 ### macOSだけで管理するもの
 
-- macOSのシステム設定
+- macOSのユーザー設定（システム設定はNix/nix-darwinの管理対象外）
 - Homebrew FormulaとCaskのうちmacOSでしか使わないもの
 - MacTeX、Skim、Docker Desktop、Google ChromeなどのGUIアプリ
 - Android Studioのパス
 - macOS用のLaunchAgent
 - macOS側で実行されるWezTerm設定
 
-macOSのシステム設定まで宣言的に管理する必要が出たら、nix-darwinを追加する。最初の段階では、Home ManagerとHomebrewを併用する。
+macOSのシステム設定はNix/nix-darwinで管理しない。macOSユーザー環境はHome Manager、GUIアプリとBrewfileはHomebrewで管理する。
 
 ### WSL Ubuntuだけで管理するもの
 
@@ -251,8 +258,6 @@ modules/
     common.nix
     macos.nix
     wsl.nix
-  darwin/
-    default.nix
   homebrew/
     macos.nix
 ```
@@ -264,7 +269,6 @@ modules/
 - `modules/home/common.nix`: OSに依存しないユーザー設定とパッケージ
 - `modules/home/macos.nix`: macOSのユーザー設定
 - `modules/home/wsl.nix`: WSL Ubuntuのユーザー設定
-- `modules/darwin/default.nix`: 将来のnix-darwin設定
 - `modules/homebrew/macos.nix`: macOSで残すHomebrewの管理
 - `hosts/*.nix`: ホストごとの組み合わせと差分
 
@@ -443,11 +447,11 @@ WSL:
   Linux側で必要な補完やサービス
 ```
 
-Home Managerの`programs.zsh`を使う場合も、共通設定とOS固有設定を同じ文字列に埋め込まず、モジュールを分ける。シェルの起動時間とエラーをmacOS、WSLの両方で確認する。
+Home Managerの`programs.zsh`を使う場合も、共通設定とOS固有設定を同じ文字列に埋め込まず、モジュールを分ける。シェルの起動時間とエラーの実環境確認は任意の追加検証であり、今回の受入範囲では未実施で必須としない。
 
 ### Phase 6: macOSへ同じFlakeを適用する（適用済み・確認継続）
 
-当初の移行では既定の順序どおりWSLで共通部分を試した後、macOSへ同じFlakeを適用した。今後のmacOS側の移行はWSLの残作業を待たずに進める。macOSではHome Managerの適用とHomebrewの適用を分けて扱う。Home Managerの対象CLIとNeovim設定はNixから解決され、Neovimは初期設定読み込みに加えて特定pluginの限定的な機能を確認済みである。その他のlazy pluginとGUI・LSP・AI等の機能は引き続き未確認。
+当初の移行では既定の順序どおりWSLで共通部分を試した後、macOSへ同じFlakeを適用した。今後のmacOS側の移行はWSLの残作業を待たずに進める。macOSではHome Managerの適用とHomebrewの適用を分けて扱う。Home Managerの対象CLIとNeovim設定はNixから解決され、Neovimは初期設定読み込みに加えて特定pluginの限定的な機能を確認済みである。その他のlazy pluginとGUI・LSP・AI等の機能は未確認で、今回の必須検証ではない。
 
 ```text
 Home Manager:
@@ -456,11 +460,9 @@ Home Manager:
 Homebrew:
   GUIアプリ、Cask、Nixに載せないFormula
 
-nix-darwin:
-  必要になったmacOSシステム設定
 ```
 
-macOSのHomebrew CaskをWSL用の設定へ持ち込まない。Homebrewの重複CLI 9種は削除済みで、`ripgrep`はHomebrew `opencode`の依存として維持する。`homebrew/Brewfile`は、最終的にmacOS専用のマニフェストとして残すか、nix-darwinのHomebrew設定へ移す。
+macOSのHomebrew CaskをWSL用の設定へ持ち込まない。Homebrewの重複CLI 9種は削除済みで、`ripgrep`はHomebrew `opencode`の依存として維持する。`homebrew/Brewfile`はmacOS向けマニフェストとして維持し、nix-darwinのHomebrew設定へ移行しない。
 
 ### Phase 7: 残ったStowパッケージを整理する
 
@@ -508,7 +510,7 @@ WSL内でsystemdを使う場合、Ubuntu側のWSL設定、起動方法、ユー�
 
 Nixの評価が成功しただけでは、アプリが実際に設定を読み込んだことを確認できない。次の検証を分けて行う。
 
-### Flakeと設定の検証
+### Flakeと設定の検証（今回の受入範囲）
 
 ```text
 nix flake check
@@ -521,13 +523,7 @@ home-manager build --flake .#<wsl-user>
 home-manager build --flake .#<mac-user>
 ```
 
-macOSでnix-darwinを導入した後は、切り替え前のビルドを先に実行する。
-
-```text
-darwin-rebuild build --flake .#<mac-host>
-```
-
-上記のホスト名は例であり、実装時に定義した出力名へ置き換える。
+macOSのシステム設定とnix-darwinは管理対象外であり、nix-darwinのビルド手順は今回の計画に含めない。
 
 ### 配置先の検証
 
@@ -539,14 +535,14 @@ darwin-rebuild build --flake .#<mac-host>
 - 認証ファイルやランタイムデータを参照していない
 - 設定ファイルの内容が移行前と意図どおり一致する
 
-### アプリケーションの検証
+### アプリケーションの検証（追加の実環境検証は今回行わない）
 
 - `zsh -n`でZsh設定の構文を確認する
-- 新しい対話シェルを起動し、エラーがないことを確認する
-- Neovimをヘッドレス起動し、設定とプラグインの読み込みエラーがないことを確認する
-- lazygit、nb、termrainなどを実際に起動する
-- Claude Code、Codex、Hermesは認証状態や履歴を変更せず、設定の読み込みだけを確認する
-- WezTermは実際にGUIを起動するOS側で確認する
+- 新しい対話シェルを起動し、エラーがないことを確認する（任意・今回未実施）
+- Neovimをヘッドレス起動し、設定とプラグインの読み込みエラーがないことを確認する（記録済みの限定検証を超える確認は任意・未実施）
+- lazygit、nb、termrainなどを実際に起動する（未検証分は任意・今回未実施）
+- Claude Code、Codex、Hermesは認証状態や履歴を変更せず、設定の読み込みだけを確認する（任意・今回未実施）
+- WezTermは実際にGUIを起動するOS側で確認する（任意・今回未実施）
 - WSLではWindows側のPATHが不要なコマンドを優先していないか確認する
 
 ### 既存Stow構成の検証
@@ -608,6 +604,8 @@ DRY_RUN=1 VERBOSE=1 /nix/store/bxscp72zwa2qr3cia8hm2av0c20xxl3y-home-manager-gen
 
 ## ロールバック
 
+実際のrollback roundtripは未実施で、今回の受入には不要である。以下の世代・バックアップ・復元上の注意とdry-run記録は保持する。実切り戻しは別途ユーザーの明示依頼・承認を得てから行う。
+
 ### WSLでのロールバック
 
 Home Managerの世代を確認し、問題が起きる前の世代を再度有効化する。世代の確認と有効化に使うコマンドは、Home Managerの導入方法に合わせて確定する。
@@ -621,7 +619,7 @@ Nixの適用前には、次を記録する。
 
 ### macOSでのロールバック
 
-nix-darwinを導入した場合は、適用前の世代へ戻せることを確認する。Home Managerのユーザー設定とnix-darwinのシステム設定は別の世代として扱い、どちらを戻す必要があるかを切り分ける。
+macOSシステム設定はNix/nix-darwinの管理対象外である。Home Managerのユーザー設定の世代と、旧Stowリンク・ソースの復元は別々に扱う。
 
 現在はgeneration 7が有効で、generation 1〜7が利用可能である。2026-10-08の更新前の世代generation 6を保持している。これはAI/GUI適用前のgeneration 5と旧Stow link 18件の退避を含む2026-10-01切替手順とは別の復帰点である。generation 6の実rollbackも未実施であり、実切り戻しは対象と手順を再確認して別途明示承認を得てから行う。旧Stow linkの復元やAI/GUI切替の巻き戻しも自動では行わない。復旧記録は`/Users/iori/.local/state/dotfiles-backups/nix-ai-gui-20261001T154203/`（`cutover-manifest.json`に19 target・18 backup・旧新generation、`cutover-status.json`に結果）にある。WezTerm親ディレクトリは空の場合だけ除去可能で、新runtimeファイルがあれば作業を止める。世代を戻すだけではStow linkは戻らない。10/7に確認したdry-runコマンドと制約は[2026-10-07検証記録](#2026-10-07-検証と復旧記録)を参照。
 
@@ -644,7 +642,7 @@ NixとStowを同時に適用して解決しようとしない。
 
 ## 受入条件
 
-移行したホストごとに、次を満たしたら対象を移行済みとする。
+移行したホストごとに、今回の対象範囲について次を満たしたら対象を移行済みとする。全機能のネイティブ実環境検証と実際のrollback roundtripは必須ではなく、未検証の制限として明記する。
 
 - [ ] 同じFlakeからmacOS用とWSL用の構成を評価できる
 - [ ] 共通CLIが両方の環境で同じ宣言からインストールされる
@@ -654,22 +652,22 @@ NixとStowを同時に適用して解決しようとしない。
 - [ ] Windows側の設定をWSLのHome Managerが誤って所有していない
 - [ ] StowとHome Managerが同じパスを管理していない
 - [ ] Neovim、Zsh、Git、lazygitなどの基本動作を確認できる
-- [ ] Home Managerまたはnix-darwinの世代から前の状態へ戻せる
+- [ ] Home Managerの世代と退避済みソースから復旧できる手順・制約を記録している（実際のrollback roundtripは今回の必須条件ではない）
 - [ ] Gitに認証情報、履歴、キャッシュ、生成ファイルが入っていない
-- [ ] `nix flake check`、対象のビルド、アプリケーション確認が完了している
+- [ ] `nix flake check`、対象構成のbuild/link確認、今回の範囲に含む限定テストの実績を記録している。追加の実環境検証は未検証の制限として区別し、受入要件にしない
 - [ ] `git diff --check`が成功し、意図しない変更が残っていない
 
 ## 未決事項
 
-次の事項は、実機の状態を確認してから決める。
+次の事項は未決で、必要性に応じて別途判断する。
 
 1. WSL内でsystemdを使用するか
 2. 実験用PCでWezTermをWindowsとWSLのどちらから起動するか（設定の所有境界を決める）
-3. macOSのシステム設定までnix-darwinで管理するか
-4. HomebrewのFormulaをどこまでNixへ移すか
-5. 現在lazy.nvimが管理するNeovimプラグインを、引き続きlazy.nvimに任せるかNix管理へ変更するか
-6. macOSとWSLで同じZsh設定をどこまで共有するか
-7. NixOS-WSLへの移行を将来行うか
-8. macOSのGit設定はStow所有、Home Manager対象外とする。Git identity設定をWSLの`~/.config/git/local`方式とどう整合させるか
+3. HomebrewのFormulaをどこまでNixへ移すか（選択は未決・実装未承認）
+4. macOSとWSLで同じZsh設定をどこまで共有するか
+5. NixOS-WSLへの移行を将来行うか
+6. macOSのGit設定はStow所有、Home Manager対象外とする。Git identity設定をWSLの`~/.config/git/local`方式とどう整合させるか
 
-未決事項の判断を移行の一律の前提条件にはしない。WSL UbuntuへのNix導入、共通CLI、Git、Neovim、Bash、Zshの設定配置と、macOSのHome Manager適用（共通CLI・Neovim・Zsh・lazygit・zeno・nb・termrain・AI・GUI設定）は実施済みで、現在generation 7である。2026-10-07と10-08に限定したCLI/設定機能確認を行ったが、AI・GUI適用後の実rollbackとネイティブGUI操作は未実施。通常の対話シェル起動は未確認で、既存起動処理が読む`~/.local/bin/env`やKeychainにはアクセスしていない。Neovimは51宣言の読み込みと特定2 pluginを確認したが、その他のlazy pluginと全編集・GUI・描画・LSP・AI機能は未確認。zeno CLI、一時ノートブックでのnb操作は確認した一方、ZLE統合、実ノート、実`.nbrc`を使う操作は未確認。termrain実設定の構文・ネットワーク機能も未検証。nix-darwinの検討とWSLの別途移行が残り、移行全体は完了していない。
+決定済み: macOSシステム設定はNix/nix-darwinで管理せず、導入予定もない。Neovimプラグイン管理はlazy.nvimを継続する。macOSユーザー環境はHome Manager、GUIアプリとBrewfileはHomebrewで管理する。
+
+未決事項の判断を移行の一律の前提条件にはしない。WSL UbuntuへのNix導入、共通CLI、Git、Neovim、Bash、Zshの設定配置と、macOSのHome Manager適用（共通CLI・Neovim・Zsh・lazygit・zeno・nb・termrain・AI・GUI設定）は実施済みで、現在generation 7である。2026-10-07と10-08に限定したCLI/設定機能確認を行った。今回の受入では追加のネイティブ実環境検証および実rollback roundtripは不要で、未検証の制限として記録する。通常の対話シェル起動は未確認で、既存起動処理が読む`~/.local/bin/env`やKeychainにはアクセスしていない。Neovimは51宣言の読み込みと特定2 pluginを確認したが、その他のlazy pluginと全編集・GUI・描画・LSP・AI機能は未確認。zeno CLI、一時ノートブックでのnb操作は確認した一方、ZLE統合、実ノート、実`.nbrc`を使う操作は未確認。termrain実設定の構文・ネットワーク機能も未検証。macOSシステム設定のNix管理は予定せず、WSLの別途作業はmacOS側の完了条件にしない。その他のHomebrew Formula選択とmacOS Git identity整合は未決で、実装承認されていない。
