@@ -12,7 +12,7 @@
 # 開発環境と経験
 - 主に Rust と Python を使う。
 - 開発経験は約 1 年の初級者であることを考慮する。
-- OS は主に macOS（時々 Windows）、シェルは Zsh、エディタは Neovim、ターミナルは WezTerm。
+- OS は主に macOS（時々 Windows）、シェルは Zsh、エディタは Neovim、ターミナルは主に Ghostty（WezTerm も併用）。
 
 # 開発の際のドキュメント作成
 開発の際は基本的にリポジトリにdocsフォルダを作成し、マークダウンでドキュメントを作成する。
