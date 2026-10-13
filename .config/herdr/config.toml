@@ -5,3 +5,7 @@ onboarding = false
 previous_agent = "prefix+up"
 next_agent = "prefix+down"
 focus_agent = "prefix+alt+1..9"
+
+[ui.sidebar.agents.rows_by_agent]
+# 既定の表示を保ち、Hermesセッションの累計トークン数を追加する
+hermes = [["state_icon", "machine", "workspace", "tab"], ["agent", "$sessiongauge_usage"]]
