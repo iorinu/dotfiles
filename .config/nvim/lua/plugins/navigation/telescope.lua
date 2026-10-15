@@ -8,15 +8,15 @@
       local builtin = require('telescope.builtin')
       
       -- 「スペース」+ f + f でファイル検索
-      vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+      vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Find Files' })
       
       -- 「スペース」+ f + g で文字検索 (grep)
-      vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+      vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Live Grep' })
       
       -- 「スペース」+ f + b で開いているバッファ検索
-      vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+      vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Buffers' })
       
       -- 「スペース」+ f + h でヘルプ検索
-      vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+      vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Help Tags' })
     end
   }

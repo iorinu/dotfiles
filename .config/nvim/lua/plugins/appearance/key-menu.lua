@@ -10,5 +10,6 @@ return {
 
 		-- グループの説明
 		require("key-menu").set("n", "<Space>b", { desc = "Buffer" })
+		require("key-menu").set("n", "<Space>f", { desc = "Search" })
 	end,
 }
