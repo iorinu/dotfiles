@@ -1,7 +1,7 @@
 -- 2. Telescope (検索プラグイン)
 return {
   'nvim-telescope/telescope.nvim',
-  tag = '0.1.8',                              -- バージョンを指定
+  tag = 'v0.2.1',                              -- バージョンを指定
   dependencies = { 'nvim-lua/plenary.nvim' }, -- 依存プラグイン
   config = function()
     -- ここでショートカットキーを設定します
