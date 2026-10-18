@@ -7,7 +7,7 @@ database:
 agent:
   max_turns: 150
   verbose: false
-  reasoning_effort: high
+  reasoning_effort: medium
   personalities: {}
 terminal:
   backend: local
