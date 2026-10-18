@@ -72,7 +72,7 @@ stt:
     model: base
   openai:
     model: whisper-1
-    language: ""
+    language: ''
 memory:
   memory_enabled: true
   user_profile_enabled: true
@@ -137,3 +137,43 @@ platform_toolsets:
 plugins:
   enabled:
     - herdr-agent-state
+mcp_servers:
+  zotero:
+    command: /Users/iori/.local/bin/uvx
+    args:
+      - --from
+      - pyzotero[mcp]==1.16.0
+      - pyzotero-mcp
+      - --enable-writes
+    connect_timeout: 60.0
+    tools:
+      include:
+        - search
+        - get_item
+        - get_children
+        - list_collections
+        - list_tags
+        - get_fulltext
+        - get_notes
+        - get_annotations
+        - export_bibtex
+        - find_duplicates
+        - find_by_citation_key
+        - list_item_fields
+        - create_item
+        - update_item
+        - add_tags
+        - create_collection
+        - update_collection
+        - add_to_collection
+        - remove_from_collection
+        - move_to_collection
+        - add_attachment
+        - create_note
+        - update_note
+        - add_by_identifier
+        - import_items
+        - set_related
+    enabled: true
+    sampling:
+      enabled: false
