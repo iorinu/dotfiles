@@ -3,47 +3,56 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		branch = "main",
 		build = ":TSUpdate", -- インストール時にパーサーを更新する
-		event = { "BufReadPost", "BufReadPost" }, -- 遅延読み込み
+		lazy = false,
 		config = function()
-			local configs = require("nvim-treesitter.config")
+			local treesitter = require("nvim-treesitter")
 
-			configs.setup({
-				-- 自動でインストールする言語のリスト
-				-- あなたの関心分野に合わせて C++, Python, Lua を入れています
-				ensure_installed = {
-					"c",
-					"lua",
-					"vim",
-					"vimdoc",
-					"query", -- 必須
-					"python",
-					"cpp",
-					"bash",
-					"markdown", -- よく使うもの
-					"latex",
-					"astro",
-					"css",
-					"html",
-					"javascript",
-					"json",
-					"typescript",
-					"tsx",
-					"markdown",
-					"markdown_inline",
-					"mdx",
-					"go",
-					"gomod",
-					"gosum",
-				},
+			treesitter.setup({})
+			treesitter.install({
+				-- 利用するパーサーを非同期でインストールする
+				"c",
+				"lua",
+				"vim",
+				"vimdoc",
+				"query", -- 必須
+				"python",
+				"cpp",
+				"bash",
+				"markdown", -- よく使うもの
+				"markdown_inline",
+				"latex",
+				"astro",
+				"css",
+				"html",
+				"javascript",
+				"json",
+				"typescript",
+				"tsx",
+				"go",
+				"gomod",
+				"gosum",
+			})
 
-				-- 同期インストール（false推奨）
-				sync_install = false,
+			vim.treesitter.language.register("markdown", "mdx")
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function(args)
+					local filetype = vim.bo[args.buf].filetype
+					local lang = vim.treesitter.language.get_lang(filetype)
+					if not lang then
+						return
+					end
 
-				-- ハイライトを有効にする (これがメイン機能)
-				highlight = { enable = true },
+					-- 未導入または未知のパーサーでは何もしない
+					local ok, available = pcall(vim.treesitter.language.add, lang)
+					if not ok or not available then
+						return
+					end
 
-				-- インデントを有効にする
-				indent = { enable = true },
+					vim.treesitter.start(args.buf)
+					if vim.treesitter.query.get(lang, "indents") then
+						vim.bo[args.buf].indentexpr = 'v:lua.require"nvim-treesitter".indentexpr()'
+					end
+				end,
 			})
 		end,
 	},
