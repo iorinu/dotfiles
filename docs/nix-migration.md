@@ -24,7 +24,7 @@
 
 追跡対象の共通設定ソースを`.config/nvim/`、`.config/lazygit/config.yml`、`.config/zeno/config.yml`、`.config/termrain/config.example.toml`、`.nbrc`へ集約し、プラグイン一覧を`docs/nvim-plugins.md`へ配置した。対応する旧追跡ソース48ファイルは、新配置の存在を確認して削除した。設定内容とロックファイルは変更せず、引き続きStowで管理するパッケージも変更していない。
 
-以前の共通設定配置整理でgeneration 5となり、その後のAI・GUI切替を経て、2026-10-08の承認済み更新適用でgeneration 7が有効となった。generation 1〜7が利用可能で、更新直前のgeneration 6も保持している。その配置整理で変更したソース参照はNeovim、lazygit、zeno、termrainサンプル、`.nbrc`の5項目で、termrain実設定の参照は変更していない。切替後のヘッドレスNeovim起動も成功し、従来と同じ51個のプラグイン名と45個の画像フレームへのアクセスを確認した。WSLはNeovimソース参照の宣言を更新済みだが、新配置の適用・動作は未検証である。
+以前の共通設定配置整理でgeneration 5となり、その後のAI・GUI切替と承認済み入力更新を経て、2026-10-19にgeneration 8が有効となった。generation 1〜8が利用可能で、最新の更新直前世代generation 7を保持している。その配置整理で変更したソース参照はNeovim、lazygit、zeno、termrainサンプル、`.nbrc`の5項目で、termrain実設定の参照は変更していない。切替後のヘッドレスNeovim起動も成功し、従来と同じ51個のプラグイン名と45個の画像フレームへのアクセスを確認した。WSLはNeovimソース参照の宣言を更新済みだが、新配置の適用・動作は未検証である。
 
 ランタイムファイルとGit管理外のローカルファイルは従来パスを維持する。termrainの実設定は`termrain/.config/termrain/config.toml`のまま、内容を読み込まずNix storeにも取り込まない。Neovim画像も`nvim/.config/nvim/amadeus_frames`に残し、`.config/nvim/amadeus_frames`から`../../nvim/.config/nvim/amadeus_frames`へのGit管理外のローカルリンクで参照する。この画像リンクはHome Managerでは管理しない。
 
@@ -51,9 +51,9 @@ Ghostty、WezTerm、herdrの追跡設定4ファイルは`.config/{ghostty,wezter
 
 ## 現在の実装状況
 
-`flake.nix`は`x86_64-linux`向けの`homeConfigurations."iori@wsl"`と、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を宣言する。共通モジュールは共通CLI（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`ripgrep`、`zoxide`）と、`dotfiles.nvimConfigPath`から`xdg.configFile."nvim"`へNeovim設定を配置する機能を提供する。Gitは独立モジュールで、WSLのみが従来どおり読み込む（`ghq.root = "~/src"`、既定ブランチ`main`、GitHub/Gistの認証helper、`~/.config/git/local` include）。WSLホスト設定はユーザー`iori`、ホームディレクトリ`/home/iori`、`stateVersion = "24.05"`を維持し、Neovim設定ソースをghq管理下の`/home/iori/src/github.com/iorinu/dotfiles/.config/nvim`に指定する。macOSホスト設定はユーザー`iori`、ホーム`/Users/iori`、同じstateVersion、Neovim設定ソース`/Users/iori/.dotfiles/.config/nvim`を指定し（generation 7で適用・参照確認済み）、Gitを管理しない。NeovimのVimTeXはmacOSでSkimを指定し、LinuxではVimTeXの既定設定に任せる。
+`flake.nix`は`x86_64-linux`向けの`homeConfigurations."iori@wsl"`と、`aarch64-darwin`向けの`homeConfigurations."iori@macos"`を宣言する。共通モジュールは共通CLI（`bat`、`fd`、`fzf`、`gh`、`ghq`、`jq`、`lazygit`、`neovim`、`ripgrep`、`zoxide`）と、`dotfiles.nvimConfigPath`から`xdg.configFile."nvim"`へNeovim設定を配置する機能を提供する。Gitは独立モジュールで、WSLのみが従来どおり読み込む（`ghq.root = "~/src"`、既定ブランチ`main`、GitHub/Gistの認証helper、`~/.config/git/local` include）。WSLホスト設定はユーザー`iori`、ホームディレクトリ`/home/iori`、`stateVersion = "24.05"`を維持し、Neovim設定ソースをghq管理下の`/home/iori/src/github.com/iorinu/dotfiles/.config/nvim`に指定する。macOSホスト設定はユーザー`iori`、ホーム`/Users/iori`、同じstateVersion、Neovim設定ソース`/Users/iori/.dotfiles/.config/nvim`を指定し（generation 8で適用・参照確認済み）、Gitを管理しない。NeovimのVimTeXはmacOSでSkimを指定し、LinuxではVimTeXの既定設定に任せる。
 
-Nixpkgsは`nixos-unstable`を指定し、具体的なリビジョンを`flake.lock`で固定している。WSL側では配置整理前のHome Managerの評価、ビルド、適用まで確認済みである。macOS arm64では2026-10-08にHome Managerの`iori@macos`へのswitchが成功し、generation 7が現在の世代、generation 1〜7が利用可能である。適用候補のdry-runは成功し、generation 6と同じ管理対象31パスで追加・削除はなかった。`nix-command`、`flakes`（および`fetch-tree`）が有効である。実行中のCLIバージョンと限定的な隔離検証、検証制限は[2026-10-08更新適用と検証記録](#2026-10-08-更新適用と検証記録)に記録した。`~/.config/nvim`はHome Managerのリンクでリポジトリの`.config/nvim`を参照する。以前の配置整理後はヘッドレス起動に成功し、従来と同じ51個のプラグイン名と45個の画像フレームへのアクセスを確認した。以前の初期起動では23個のプラグインがロードされた。VimTeXの`view_method`は`skim`である。すべての遅延ロードプラグインの機能は未確認。以前のStowリンクは`~/.config/nvim.stow-backup`に保存されている。
+Nixpkgsは`nixos-unstable`を指定し、具体的なリビジョンを`flake.lock`で固定している。WSL側では配置整理前のHome Managerの評価、ビルド、適用まで確認済みである。macOS arm64では2026-10-19にHome Managerの`iori@macos`へのswitchが成功し、generation 8が現在の世代、generation 1〜8が利用可能である。適用候補のdry-runは成功し、更新前と同じ管理対象31パスで追加・削除はなかった。`nix-command`、`flakes`（および`fetch-tree`）が有効である。CLIバージョンと限定的な隔離検証、検証制限は[2026-10-19更新適用と検証記録](#2026-10-19-更新適用と検証記録)に記録した。`~/.config/nvim`はHome Managerのリンクでリポジトリの`.config/nvim`を参照する。以前の配置整理後はヘッドレス起動に成功し、従来と同じ51個のプラグイン名と45個の画像フレームへのアクセスを確認した。以前の初期起動では23個のプラグインがロードされた。VimTeXの`view_method`は`skim`である。すべての遅延ロードプラグインの機能は未確認。以前のStowリンクは`~/.config/nvim.stow-backup`に保存されている。
 
 macOSの`~/.config/lazygit`は実ディレクトリで、Home Managerは`xdg.configFile."lazygit/config.yml"`だけを、リポジトリの`.config/lazygit/config.yml`へのout-of-store symlinkとして管理する。Stow時代のディレクトリリンクは`~/.config/lazygit.stow-backup`に保存されている。`state.yml`と`github_pull_requests.json`はHome Manager管理外で、ライブディレクトリ内の個別リンクが元のリポジトリパスを参照している。ネイティブの`lazygit --print-config-dir`は`~/.config/lazygit`を示す。Nix版lazygit v0.65.1は実際の設定を使った一時リポジトリ上で起動し、日本語UIの表示後に`q`で終了した。設定のパーサーと実行時読み込みは確認済みだが、元のstateファイルには触れていない。
 
@@ -117,7 +117,7 @@ Neovimのプラグイン管理はlazy.nvimを継続し、Nixへの管理移行�
 |---|---|---|
 | macOS Neovimの限定的な機能確認済み・一部未検証 | 残りのプラグイン、編集・GUI・描画・LSP・AI機能 | 2026-10-07、隔離したネイティブ起動で51宣言を読み込み、`kutoten-toggle.nvim`と`nvim-cmp`を強制ロードして確認。Zen/Han/Normalコマンド登録と句読点変換、cmp source登録を確認した。追加の個別機能検証は今回行わず、その他は未検証。 |
 | 実環境の追加検証は今回の必須範囲外 | 通常のZsh起動とKeychain、ZLE UI、GUI操作、実ノート、termrain天気/ネットワーク | 既存記録の限定検証結果を維持する。これらは未検証であり、今回追加検証しない。 |
-| macOSは世代1〜7が利用可能。generation 5/6およびgeneration 7候補のdry-run記録あり。実際の復帰は未実施 | 実際のrollback roundtrip | 今回は実施・受入要件ではない。dry-run、generation、バックアップと復旧上の注意は保持する。実rollbackには別途明示依頼・承認が必要。 |
+| macOSは世代1〜8が利用可能。generation 5/6/7およびgeneration 8候補のdry-run記録あり。実際の復帰は未実施 | 実際のrollback roundtrip | 今回は実施・受入要件ではない。dry-run、generation、バックアップと復旧上の注意は保持する。実rollbackには別途明示依頼・承認が必要。 |
 | WSLの未移行設定・実行時確認 | Windows側PATHの整理と未移行アプリ設定 | 別途任意のWSL作業として扱い、macOSの完了条件にしない。 |
 
 ### 別途判断する設定・整理
@@ -125,7 +125,7 @@ Neovimのプラグイン管理はlazy.nvimを継続し、Nixへの管理移行�
 | 状態 | 対象と次の作業 |
 |---|---|
 | macOS移行済み・WSL未移行 | macOSではlazygitの日本語TUI、zenoのネイティブCLI、一時ノートブックでのnb init/add/show/searchを確認済み。ZLE統合・補完UI、実ノートと実`.nbrc`を使う操作、termrain実設定の構文・ネットワーク機能は未検証で、今回追加検証しない。WSL側は任意の別作業とする |
-| macOS適用済み・通常起動未検証、WSL基本Zsh設定適用済み | Home Manager generation 7が現在の世代。`~/.zshrc`はmacOSで`modules/home/zsh/macos.zsh`へのHome Managerリンク。WSLはNix Home Managerが最小の`.zshrc`を生成し、`~/go/bin`をPATHへ追加する。macOS側は切替時の履歴的検証として新エントリポイントの構文・旧設定との112個の実行文順序・Nix check/build・Stow unlink simulationを確認済み。新しいPATH prefixの隔離検証も済んでいるが、通常起動とKeychainを含む設定sourceは未確認で、今回追加検証しない。WSL側は`zsh -n`とlogin-shellでGo PATHを確認済み |
+| macOS適用済み・通常起動未検証、WSL基本Zsh設定適用済み | Home Manager generation 8が現在の世代。`~/.zshrc`はmacOSで`modules/home/zsh/macos.zsh`へのHome Managerリンク。WSLはNix Home Managerが最小の`.zshrc`を生成し、`~/go/bin`をPATHへ追加する。macOS側は切替時の履歴的検証として新エントリポイントの構文・旧設定との112個の実行文順序・Nix check/build・Stow unlink simulationを確認済み。新しいPATH prefixの隔離検証も済んでいるが、通常起動とKeychainを含む設定sourceは未確認で、今回追加検証しない。WSL側は`zsh -n`とlogin-shellでGo PATHを確認済み |
 | macOS AI・GUI、WSL AI適用済み | macOSはAI 15 leafとGUI 4 leaf、WSLはAI 13 leafをHome Managerで管理する。CLI構文とライブlink検証は成功。GUI操作、Claude対話/hooks、AI推論、サービス再起動、実rollbackは未実施。旧sourceは保持する |
 | 9種の重複CLI削除済み | `ripgrep`はNix版をユーザーPATH用、Homebrew版をHomebrew `opencode`の依存用に維持する。その他のFormula/Cask選択は未決で、実装承認されていない |
 
@@ -172,7 +172,7 @@ brew update && brew upgrade
 
 Neovimプラグインの更新はNeovim内で`:Lazy update`を実行する。更新後は`lazy-lock.json`の差分を確認する。
 
-2026-10-08: 承認済みの入力更新を適用し、generation 7へswitchした。適用と限定検証の詳細は[更新適用と検証記録](#2026-10-08-更新適用と検証記録)を参照。
+2026-10-19: 承認済み入力更新を適用し、generation 8へswitchした。適用と限定検証の詳細は[更新適用と検証記録](#2026-10-19-更新適用と検証記録)を参照。2026-10-08以前の履歴記録は変更していない。
 
 ## WSL側での更新
 
@@ -602,6 +602,19 @@ DRY_RUN=1 VERBOSE=1 /nix/store/bxscp72zwa2qr3cia8hm2av0c20xxl3y-home-manager-gen
 
 通常のシェル初期化とKeychain、GUI操作、実LSP/AI推論、他のプラグイン、termrain実設定・ネットワーク、実ノートを使うnb、rollback実行は未検証。brew upgrade、Lazy update、WSL runtime検証は行っていない。適用前のリンク・世代の記録（metadataのみでソースファイルのバックアップではない）は`/Users/iori/.local/state/dotfiles-backups/nix-update-20261008T125905044688/preflight-manifest.json`にある。
 
+## 2026-10-19 更新適用と検証記録
+
+ユーザー承認のもと`nix flake update`を実行し、入力を更新した。Home Managerは`fae6e9e42c3b762ab47635cddcfaf6f52374a61b`から`640725978b99076e18e069f6e7d2959124584f8f`、nixpkgsは`151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4`から`fe13242281a67641c0102cdb1087f0ebe586c7df`へ更新され、両方の更新先は10月15日付である。check、build、候補activate dry-run、switchはいずれも成功した。現在のgenerationは8（`/nix/store/5l0had8i67ydcyxklhngyh4ywmcfa1d2-home-manager-generation`）、generation 1〜8が利用可能で、更新直前のgeneration 7（`/nix/store/0i2c6gb791qz4fqlrdmj2l4ngijzq3qp-home-manager-generation`）を保持している。
+
+- `nix flake check --no-write-lock-file`は成功。既知の`unknown flake output 'homeManagerModules'`警告があった。activation packageの`nix build --no-link --no-write-lock-file`も成功した。
+- 候補generationの`DRY_RUN=1 VERBOSE=1 activate`は成功し、適用前後で旧generationと既存リンクに変化はなかった。switch後、管理対象31リンクが候補を参照することを確認し、追加・削除の宛先や未管理ファイルとの衝突はなかった。
+- Home ManagerネイティブのLaunchAgentsコレクションは適用前後とも空。leaf管理のCodex LaunchAgentは再起動していない。フォント同期先と候補フォントツリーも適用前に空だった。
+- Codex設定の既存unstaged変更はそのまま残した。Git indexのメタデータは保持されている。作業ファイルの内容は読まず、内容の保持・検証は記録していない。
+- `experimental-features`の出力は`fetch-tree flakes nix-command`。CLIはfzf 0.74.4から0.74.5、lazygit 0.66.0から0.66.1、nvim 0.12.5から0.12.6へ更新。bat 0.26.1、fd 10.5.0、gh 2.102.0、ghq 1.10.1、jq 1.8.2、rg 15.2.0、zoxide 0.10.0は変化なし。
+- 一時HOME/XDGで10 CLIのバージョン確認を行い、bat/fd/fzf/jq/rg/zoxideのfixture動作と`nvim --headless -u NONE`のバッファ操作が成功した。これらはOS sandbox外の検証である。全シェル初期化、PATHを含む通常起動、Neovimのinit/plugin/LSP/UI、lazygitの完全なTUI、認証・remote動作を確認したものではない。
+
+通常のシェル初期化とKeychain、Neovimの全機能、lazygitの完全なTUI、GUI操作、実rollback、Homebrew更新、Lazy更新、WSL runtime検証は行っていない。Codex設定ファイルの内容を読まず、Keychainにもアクセスしていない。バックアップ記録は`/Users/iori/.local/state/dotfiles-backups/nix-update-20261019-lomkfixq/`にあり、`flake.lock.before`とmetadata-onlyの`preflight.json`、`candidate-preflight.json`、`postflight.json`、`cli-verification.json`を含む。metadata manifestはソース内容のバックアップではない。generation 7への復帰だけでは可変のout-of-storeソースは戻らず、旧Stowリンクも復元されない。
+
 ## ロールバック
 
 実際のrollback roundtripは未実施で、今回の受入には不要である。以下の世代・バックアップ・復元上の注意とdry-run記録は保持する。実切り戻しは別途ユーザーの明示依頼・承認を得てから行う。
@@ -621,7 +634,7 @@ Nixの適用前には、次を記録する。
 
 macOSシステム設定はNix/nix-darwinの管理対象外である。Home Managerのユーザー設定の世代と、旧Stowリンク・ソースの復元は別々に扱う。
 
-現在はgeneration 7が有効で、generation 1〜7が利用可能である。2026-10-08の更新前の世代generation 6を保持している。これはAI/GUI適用前のgeneration 5と旧Stow link 18件の退避を含む2026-10-01切替手順とは別の復帰点である。generation 6の実rollbackも未実施であり、実切り戻しは対象と手順を再確認して別途明示承認を得てから行う。旧Stow linkの復元やAI/GUI切替の巻き戻しも自動では行わない。復旧記録は`/Users/iori/.local/state/dotfiles-backups/nix-ai-gui-20261001T154203/`（`cutover-manifest.json`に19 target・18 backup・旧新generation、`cutover-status.json`に結果）にある。WezTerm親ディレクトリは空の場合だけ除去可能で、新runtimeファイルがあれば作業を止める。世代を戻すだけではStow linkは戻らない。10/7に確認したdry-runコマンドと制約は[2026-10-07検証記録](#2026-10-07-検証と復旧記録)を参照。
+現在はgeneration 8が有効で、generation 1〜8が利用可能である。最新のrollback pointは2026-10-19更新前のgeneration 7で、2026-10-08更新前のgeneration 6も保持している。これらはAI/GUI適用前のgeneration 5と旧Stow link 18件の退避を含む2026-10-01切替手順とは別の復帰点である。generation 7への実rollbackは未実施であり、実切り戻しは対象と手順を再確認して別途明示承認を得てから行う。旧Stow linkの復元やAI/GUI切替の巻き戻しも自動では行わない。2026-10-19の記録とbackup metadataは[更新適用と検証記録](#2026-10-19-更新適用と検証記録)を参照。AI/GUI復旧記録は`/Users/iori/.local/state/dotfiles-backups/nix-ai-gui-20261001T154203/`（`cutover-manifest.json`に19 target・18 backup・旧新generation、`cutover-status.json`に結果）にある。WezTerm親ディレクトリは空の場合だけ除去可能で、新runtimeファイルがあれば作業を止める。世代を戻すだけではStow linkは戻らない。10/7に確認したdry-runコマンドと制約は[2026-10-07検証記録](#2026-10-07-検証と復旧記録)を参照。
 
 generation 1〜4は以前の共通配置整理前の世代である。そこへ戻す場合は、AI・GUI切替の復旧とは分けて旧source配置の復元が必要となる。画像・ランタイムファイル・ローカル実設定は復元作業でも上書きしない。
 
@@ -670,4 +683,4 @@ NixとStowを同時に適用して解決しようとしない。
 
 決定済み: macOSシステム設定はNix/nix-darwinで管理せず、導入予定もない。Neovimプラグイン管理はlazy.nvimを継続する。macOSユーザー環境はHome Manager、GUIアプリとBrewfileはHomebrewで管理する。
 
-未決事項の判断を移行の一律の前提条件にはしない。WSL UbuntuへのNix導入、共通CLI、Git、Neovim、Bash、Zshの設定配置と、macOSのHome Manager適用（共通CLI・Neovim・Zsh・lazygit・zeno・nb・termrain・AI・GUI設定）は実施済みで、現在generation 7である。2026-10-07と10-08に限定したCLI/設定機能確認を行った。今回の受入では追加のネイティブ実環境検証および実rollback roundtripは不要で、未検証の制限として記録する。通常の対話シェル起動は未確認で、既存起動処理が読む`~/.local/bin/env`やKeychainにはアクセスしていない。Neovimは51宣言の読み込みと特定2 pluginを確認したが、その他のlazy pluginと全編集・GUI・描画・LSP・AI機能は未確認。zeno CLI、一時ノートブックでのnb操作は確認した一方、ZLE統合、実ノート、実`.nbrc`を使う操作は未確認。termrain実設定の構文・ネットワーク機能も未検証。macOSシステム設定のNix管理は予定せず、WSLの別途作業はmacOS側の完了条件にしない。その他のHomebrew Formula選択とmacOS Git identity整合は未決で、実装承認されていない。
+未決事項の判断を移行の一律の前提条件にはしない。WSL UbuntuへのNix導入、共通CLI、Git、Neovim、Bash、Zshの設定配置と、macOSのHome Manager適用（共通CLI・Neovim・Zsh・lazygit・zeno・nb・termrain・AI・GUI設定）は実施済みで、現在generation 8である。2026-10-07、10-08、10-19に限定したCLI/設定機能確認を行った。今回の受入では追加のネイティブ実環境検証および実rollback roundtripは不要で、未検証の制限として記録する。通常の対話シェル起動は未確認で、既存起動処理が読む`~/.local/bin/env`やKeychainにはアクセスしていない。Neovimは今回の設定なしバッファ確認に加え、過去に51宣言の読み込みと特定2 pluginを確認したが、その他のlazy pluginと全編集・GUI・描画・LSP・AI機能は未確認。zeno CLI、一時ノートブックでのnb操作は確認した一方、ZLE統合、実ノート、実`.nbrc`を使う操作は未確認。termrain実設定の構文・ネットワーク機能も未検証。macOSシステム設定のNix管理は予定せず、WSLの別途作業はmacOS側の完了条件にしない。その他のHomebrew Formula選択とmacOS Git identity整合は未決で、実装承認されていない。
