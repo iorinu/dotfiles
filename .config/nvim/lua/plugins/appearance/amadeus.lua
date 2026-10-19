@@ -15,6 +15,11 @@ return {
     opts = {
       backend = "kitty",
       processor = "magick_cli", -- magick CLI を使う (luarocks の magick が不要)
+      integrations = {
+        markdown = {
+          filetypes = { "markdown", "vimwiki", "mdx" },
+        },
+      },
     },
   },
   {
