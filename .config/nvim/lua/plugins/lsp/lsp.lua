@@ -86,9 +86,10 @@ return {
 				root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
 				capabilities = capabilities,
 				filetypes = { "mdx" },
-				before_init = function(_, config)
+				before_init = function(params, config)
 					local root = config.root_dir or vim.fn.getcwd()
-					config.init_options = vim.tbl_deep_extend("force", config.init_options or {}, {
+					-- 初期化要求に反映するため、送信される params を更新する
+					params.initializationOptions = vim.tbl_deep_extend("force", params.initializationOptions or {}, {
 						typescript = {
 							tsdk = root .. "/node_modules/typescript/lib",
 						},
