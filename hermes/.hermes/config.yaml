@@ -1,5 +1,5 @@
 model:
-  default: gpt-6.1-sol
+  default: gpt-6.1-terra
   provider: openai-codex
   base_url: https://chatgpt.com/backend-api/codex
 database:
@@ -7,7 +7,7 @@ database:
 agent:
   max_turns: 150
   verbose: false
-  reasoning_effort: medium
+  reasoning_effort: high
   personalities: {}
 terminal:
   backend: local
