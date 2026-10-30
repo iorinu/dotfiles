@@ -20,6 +20,7 @@
   "im-select.nvim": { "branch": "master", "commit": "113a6905a1c95d2990269f96abcbad9718209557" },
   "image.nvim": { "branch": "master", "commit": "365e2ace0f619164ae6fd2f6f1d2807775dd6849" },
   "jupytext.nvim": { "branch": "main", "commit": "c8baf3ad344c59b3abd461ecc17fc16ec44d0f7b" },
+  "kensaku.vim": { "branch": "main", "commit": "67727c8cc81f45b3c3abc600ecfef6fba620eb88" },
   "key-menu.nvim": { "branch": "master", "commit": "171ad5c40fe978ebba86026beac1ac3ed8eda42d" },
   "kutoten-toggle.nvim": { "branch": "main", "commit": "c5465dfb2d367c0c96e4eb9edc2204516ca689d5" },
   "lazy.nvim": { "branch": "main", "commit": "306a05526ada86a7b30af95c5cc81ffba93fef97" },
