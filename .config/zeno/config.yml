@@ -83,3 +83,7 @@ snippets:
   - name: cd lectures
     keyword: lec
     snippet: cd ~/lectures
+
+  - name: "difit"
+    keyword: "difit"
+    snippet: "npx difit ."
