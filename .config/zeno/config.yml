@@ -87,3 +87,7 @@ snippets:
   - name: "difit"
     keyword: "difit"
     snippet: "npx difit ."
+
+  - name: "mdecho"
+    keyword: "mdecho"
+    snippet: "npx mdecho "
