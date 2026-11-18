@@ -3,6 +3,7 @@
   home.packages = [
     pkgs.blesh
     pkgs.herdr
+    pkgs.opencode
     pkgs.peco
   ];
 
@@ -111,6 +112,14 @@
     "nix-command"
     "flakes"
   ];
+
+  # 参照されていないstore pathだけを回収し、profileの全世代を保持する。
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = null;
+    persistent = true;
+  };
 
   targets.genericLinux = {
     enable = true;

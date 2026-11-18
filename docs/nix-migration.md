@@ -176,14 +176,18 @@ Neovimプラグインの更新はNeovim内で`:Lazy update`を実行する。更
 
 ## WSL側での更新
 
-当初はWSL Ubuntuから試し、その後macOSへ切り替えた。今後はmacOSを優先し、WSL上での検証を必須条件にしない。Nix/Home Managerの導入とFlake機能の有効化が済んだWSL環境で構成を更新するときは、リポジトリのルートで次を実行する。
+当初はWSL Ubuntuから試し、その後macOSへ切り替えた。今後はmacOSを優先し、WSL上での検証を必須条件にしない。Nix/Home Managerの導入とFlake機能の有効化が済んだWSL環境では、ローカルGit flake `.`を使い、リポジトリのルートで次の非適用チェックとactivation packageのビルドを先に行う。問題がないことを確認し、明示的な承認を得た後に限ってswitchする。
 
 Gitで共有した`flake.lock`はWSL側でも使われるが、WSL自身でcheck/buildとswitchが必要である。WSLの実行時動作は別途未検証であり、macOSの更新を進める条件にはしない。
 
 ```sh
-nix flake check path:.
-home-manager switch --flake path:.#iori@wsl
+nix flake check . --no-write-lock-file
+nix build '.#homeConfigurations."iori@wsl".activationPackage' --no-link --no-write-lock-file
+# 明示的な承認後にのみ実行
+home-manager switch --flake .#iori@wsl --no-write-lock-file
 ```
+
+ローカルGit flake `.`は、追跡対象ファイルの現在の内容を入力に含み、既存ファイルの未ステージ変更も反映する。既に追跡されているファイルの編集には、ステージもコミットも不要。新しく追加したNixモジュールをFlakeに含めるには、Gitの追跡対象にする必要があるため、別途ユーザー承認を得てGitへ登録する。この手順では登録しない。未追跡ファイルとignore対象の生成物は含まれない。一方、`github:...`などのリモートGit flake参照はローカル編集を含まず、リモートの参照先を入力にするため、`.`と混同しない。`path:.`はGitの追跡・ignoreによるフィルタリングを行わず、ignore対象の生成物なども取り込むので、この手順では推奨しない。過去に実行した`path:.`コマンドの記録は当時の実行履歴であり、今後の手順ではない。
 
 WSLのNeovim参照宣言は更新済みだが、新配置の適用・動作は未検証である。ローカルのNeovim画像は管理対象外であり、そのホストでも必要に応じて旧画像パスへのリンクを用意する。
 
@@ -229,6 +233,12 @@ macOSのシステム設定はNix/nix-darwinで管理しない。macOSユーザ�
 - WSL内のユーザーサービス
 - Linux側の設定ファイル
 - WSL固有の環境変数
+
+WSLのHome Managerでは、ユーザー権限で週1回実行するNix GC timerを有効にする。標準のmulti-user NixではGC要求はdaemonに送られ、権限に応じて、どのユーザー所有かにかかわらずグローバルに到達不能なstore pathを回収する。一般にsudoが必須とは限らない。`nix-collect-garbage`は引数なしで実行し、参照されていないstore pathだけを回収する。
+
+GCは古いprofileやHome Managerの世代を削除しない。`--delete-older-than`、`-d`、generation削除コマンドは使わない。GC timerにはsystemd user managerが利用できることが前提となる。
+
+設定はHome Manager switchをユーザーが承認して実行するまで有効にならない。安全な手動GCも `nix-collect-garbage`（引数なし）を使う。問題があればHome Managerの以前の世代へ戻す。timerを止める場合はWSL設定の`nix.gc.automatic`を`false`にしてから、ユーザー承認のうえHome Managerを再適用する。GCによるVHDXファイルの縮小は別問題であり、store pathの回収だけではWindows側の仮想ディスクサイズは縮まらない。
 
 既存のUbuntuを使い続ける場合、NixはUbuntuの中にインストールする。これはUbuntuをNixOSへ置き換える作業ではない。
 
