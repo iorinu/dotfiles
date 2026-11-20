@@ -12,3 +12,6 @@ export PATH="/Library/TeX/texbin:$PATH"
 
 # GoのユーザーツールをPATHに追加する。
 export PATH="$HOME/go/bin:$PATH"
+
+# macOS上のHermesが使うcua-driverの実行ファイルを指定する。
+export HERMES_CUA_DRIVER_CMD="/Applications/CuaDriver.app/Contents/MacOS/cua-driver"
